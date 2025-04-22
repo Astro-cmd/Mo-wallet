@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+{% load static%}
+
+{% block title %}Home - Mo-Wallet{% endblock %}
+
+{% block content %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mo-Wallet - Personal Finance Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <script src="{% static 'js/home.js' %}"></script>
+</head>
+<body>
+    <!-- Header -->
+    
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Take Control of Your Finances with Mo-Wallet</h1>
+            <p>Track expenses, save money, and achieve your financial goals with our intuitive personal finance management system designed for Kenyans.</p>
+            
+            <div class="hero-buttons">
+                <button class="btn btn-primary">Get Started Free</button>
+                <button class="btn btn-outline">Learn More</button>
+            </div>
+            
+            <div class="hero-stats">
+                <div class="user-avatars">
+                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User">
+                    <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="User">
+                </div>
+                <span>Join 10,000+ happy users</span>
+            </div>
+        </div>
+        
+        <img src="{% static 'images/mo-wallet.jpg' %}" alt="Mo-Wallet Dashboard" class="hero-image">
+    </section>
+
+    <!-- Features Section -->
+    <section class="section" id="features">
+        <div class="section-title">
+            <h2>Powerful Features</h2>
+            <p>Everything you need to manage your money effectively</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <h3>Expense Analytics</h3>
+                <p>Visualize your spending patterns with beautiful charts and get insights to help you save more.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <h3>Savings Goals</h3>
+                <p>Set financial goals and track your progress with our intuitive goal tracking system.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <h3>Budget Alerts</h3>
+                <p>Get notified when you're approaching your budget limits to avoid overspending.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h3>Mobile Friendly</h3>
+                <p>Access your finances on the go with our fully responsive mobile interface.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3>Bank-Level Security</h3>
+                <p>Your data is protected with industry-standard encryption and security protocols.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-sync-alt"></i>
+                </div>
+                <h3>M-Pesa Integration</h3>
+                <p>Automatically track your M-Pesa transactions with our seamless integration.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number" id="users-count">0</div>
+                <div class="stat-label">Active Users</div>
+            </div>
+            
+            <div class="stat-item">
+                <div class="stat-number" id="transactions-count">0</div>
+                <div class="stat-label">Transactions Tracked</div>
+            </div>
+            
+            <div class="stat-item">
+                <div class="stat-number" id="savings-count">0</div>
+                <div class="stat-label">KES Saved</div>
+            </div>
+            
+            <div class="stat-item">
+                <div class="stat-number" id="rating-count">0</div>
+                <div class="stat-label">Average Rating</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="section" id="testimonials">
+        <div class="section-title">
+            <h2>What Our Users Say</h2>
+            <p>Real stories from our community</p>
+        </div>
+        
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <div class="testimonial-content">
+                    "Mo-Wallet helped me save 30% more by visualizing my spending habits. The budget alerts are a game-changer!"
+                </div>
+                <div class="testimonial-author">
+                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah K." class="author-avatar">
+                    <div class="author-info">
+                        <h4>Sarah K.</h4>
+                        <p>Freelance Designer</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-card">
+                <div class="testimonial-content">
+                    "Tracking multiple business accounts became so easy with Mo-Wallet. The reports save me hours every month."
+                </div>
+                <div class="testimonial-author">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="James M." class="author-avatar">
+                    <div class="author-info">
+                        <h4>James M.</h4>
+                        <p>Small Business Owner</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-card">
+                <div class="testimonial-content">
+                    "As a student, every shilling counts. Mo-Wallet's goal tracking helped me save for my laptop in just 4 months!"
+                </div>
+                <div class="testimonial-author">
+                    <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Amina W." class="author-avatar">
+                    <div class="author-info">
+                        <h4>Amina W.</h4>
+                        <p>University Student</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="cta-content">
+            <h2>Ready to Transform Your Finances?</h2>
+            <p>Join thousands of Kenyans taking control of their money today. Sign up now and get your first month free.</p>
+            <button class="btn btn-primary">Get Started Free</button>
+        </div>
+    </section>
+    <!-- Signup Overlay -->
+<div id="signupOverlay" class="overlay">
+    <div class="modal">
+      <form id="signupForm">
+        <h2>Sign Up</h2>
+        <div class="input-group">
+          <label>Username</label>
+          <input type="text" id="username" required />
+        </div>
+        <div class="input-group">
+          <label>Email</label>
+          <input type="email" id="email" required />
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" id="password" required />
+        </div>
+        <div class="input-group">
+          <label>Confirm Password</label>
+          <input type="password" id="confirmPassword" required />
+        </div>
+        <button type="submit">Register</button>
+        <p id="message"></p>
+      </form>
+      <span id="closeModal" class="close-btn">&times;</span>
+    </div>
+  </div>
+  
+  <script src="{% static 'js/signup.js' %}"></script>
+  
+
+    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('/api/home-data/');
+                const data = await response.json();
+
+                // Example: Update stats dynamically
+                document.getElementById('users-count').textContent = data.active_users;
+                document.getElementById('transactions-count').textContent = data.transactions_tracked;
+                document.getElementById('savings-count').textContent = data.kes_saved;
+                document.getElementById('rating-count').textContent = data.average_rating;
+            } catch (error) {
+                console.error('Error fetching home data:', error);
+            }
+        });
+    </script>
+</body>
+{% endblock %}
+</html>
