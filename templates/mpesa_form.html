@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Send M-Pesa Payment</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f3f4f6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .form-wrapper {
+            max-width: 500px;
+            margin: 60px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #4B5563;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #d1d5db;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #6366F1;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #4F46E5;
+        }
+
+        .success, .error {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .success {
+            color: #10B981;
+        }
+
+        .error {
+            color: #EF4444;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-wrapper feature-card">
+    <h2>Send M-Pesa Payment</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="from_number">Sender Number (e.g. 2547XXXXXX)</label>
+        <input type="text" id="from_number" name="from_number" required>
+
+        <label for="to_number">Receiver Number</label>
+        <input type="text" id="to_number" name="to_number" required>
+
+        <label for="amount">Amount (KES)</label>
+        <input type="number" id="amount" name="amount" required>
+
+        <button type="submit">Send Money</button>
+    </form>
+
+    {% if message %}
+        <div class="{{ status }}">{{ message }}</div>
+    {% endif %}
+</div>
+
+<script>
+    {{ your_script|safe }}
+</script>
+</body>
+</html>

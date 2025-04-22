@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M-Pesa Test</title>
+    <script>
+        async function sendRequest(url, data) {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+            const result = await response.json();
+            alert(JSON.stringify(result, null, 2));
+        }
+
+        function testPaymentNotification() {
+            const data = {
+                transaction_id: document.getElementById('transaction_id').value,
+                amount: document.getElementById('amount').value,
+                phone_number: document.getElementById('phone_number').value,
+            };
+            sendRequest('/mpesa/payment-notification/', data);
+        }
+
+        function testInitiateTransaction() {
+            const data = {
+                phone_number: document.getElementById('init_phone_number').value,
+                amount: document.getElementById('init_amount').value,
+            };
+            sendRequest('/mpesa/initiate-transaction/', data);
+        }
+
+        function testLipaNaMpesa() {
+            const data = {
+                phone_number: document.getElementById('lipa_phone_number').value,
+                amount: document.getElementById('lipa_amount').value,
+            };
+            sendRequest('/mpesa/api/lipa/', data);
+        }
+    </script>
+</head>
+<body>
+    <h1>M-Pesa Test Interface</h1>
+
+    <h2>Payment Notification</h2>
+    <label for="transaction_id">Transaction ID:</label>
+    <input type="text" id="transaction_id" placeholder="Enter Transaction ID">
+    <br>
+    <label for="amount">Amount:</label>
+    <input type="number" id="amount" placeholder="Enter Amount">
+    <br>
+    <label for="phone_number">Phone Number:</label>
+    <input type="text" id="phone_number" placeholder="Enter Phone Number">
+    <br>
+    <button onclick="testPaymentNotification()">Send Payment Notification</button>
+
+    <h2>Initiate Transaction</h2>
+    <label for="init_phone_number">Phone Number:</label>
+    <input type="text" id="init_phone_number" placeholder="Enter Phone Number">
+    <br>
+    <label for="init_amount">Amount:</label>
+    <input type="number" id="init_amount" placeholder="Enter Amount">
+    <br>
+    <button onclick="testInitiateTransaction()">Initiate Transaction</button>
+
+    <h2>Lipa Na M-Pesa</h2>
+    <label for="lipa_phone_number">Phone Number:</label>
+    <input type="text" id="lipa_phone_number" placeholder="Enter Phone Number">
+    <br>
+    <label for="lipa_amount">Amount:</label>
+    <input type="number" id="lipa_amount" placeholder="Enter Amount">
+    <br>
+    <button onclick="testLipaNaMpesa()">Lipa Na M-Pesa</button>
+</body>
+</html>
