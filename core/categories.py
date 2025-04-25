@@ -60,7 +60,21 @@ TRANSACTION_CATEGORIES = (
         ('games', 'Games'),
         ('crafts', 'Crafts'),
         ('gardening', 'Gardening'),
-        ('home_decor', 'Home Decor')
+        ('home_decor', 'Home Decor'),
+        ('home_maintenance', 'Home Maintenance'),
+        ('home_security', 'Home Security'),
+        ('home_improvement_tools', 'Home Improvement Tools'),
+        ('home_appliances', 'Home Appliances'),
+        ('kitchenware', 'Kitchenware'),
+        ('cleaning_supplies', 'Cleaning Supplies'),
+        ('laundry', 'Laundry'),
+        ('yard_work', 'Yard Work'),
+        ('pest_control', 'Pest Control'),
+        ('seasonal_decorations', 'Seasonal Decorations'),
+        ('holiday_expenses', 'Holiday Expenses'),
+        ('gifts_for_others', 'Gifts for Others'),
+        ('donations', 'Donations'),
+        ('charitable_contributions', 'Charitable Contributions'),
         
     )
     

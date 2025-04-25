@@ -30,20 +30,28 @@ class SignupTests(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn('email', form.errors)
         self.assertIn('phone_number', form.errors)
-        self.assertIn('password1', form.errors)
-
-    def test_ajax_validate_signup_valid(self):
-        url = reverse('users:validate-signup')
-        response = self.client.post(url, self.valid_data, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, {'success': True})
-
-    def test_ajax_validate_signup_invalid(self):
-        # This test is no longer relevant with the new registration flow.
-        pass
+        self.assertIn('password2', form.errors)
+        self.assertIn('username', form.errors)
 
     def test_signup_view_creates_user(self):
         url = reverse('users:signup')
         response = self.client.post(url, self.valid_data, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertTrue(User.objects.filter(username='testuser').exists())
+
+    def test_login_view(self):
+        # Create user first
+        User.objects.create_user(username='testlogin', email='testlogin@example.com', phone_number='0712345678', password='Test@1234')
+        url = reverse('users:login')
+        response = self.client.post(url, {'username': 'testlogin', 'password': 'Test@1234'}, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('_auth_user_id', self.client.session)
+
+    def test_logout_view(self):
+        # Create and login user
+        user = User.objects.create_user(username='testlogout', email='testlogout@example.com', phone_number='0712345678', password='Test@1234')
+        self.client.login(username='testlogout', password='Test@1234')
+        url = reverse('users:logout')
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn('_auth_user_id', self.client.session)

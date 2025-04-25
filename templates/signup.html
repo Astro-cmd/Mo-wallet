@@ -14,6 +14,12 @@
       <h2>Sign Up</h2>
       {% csrf_token %}
 
+      {% if form.non_field_errors %}
+        <div class="error non-field-error">
+          {{ form.non_field_errors.0 }}
+        </div>
+      {% endif %}
+
       <!-- Username -->
       <div class="input-group">
         <label for="username">Username</label>
@@ -40,7 +46,7 @@
         <input type="text" id="phone_number" name="phone_number" required
                value="{{ form.phone_number.value|default:'' }}"
                placeholder="07... or 2547... or 01...">
-        <div class="error" id="phoneError">
+        <div class="error" id="phone_numberError">
           {% if form.phone_number.errors %}{{ form.phone_number.errors.0 }}{% endif %}
         </div>
       </div>
@@ -80,12 +86,6 @@
   <script>
     function validateForm() {
       let isValid = true;
-      
-      // Clear previous errors
-      document.querySelectorAll('.error').forEach(el => el.textContent = '');
-      
-      // Username validation (4-30 chars)
-      const username = document.getElementById('username').value.trim();
       if (username.length < 4 || username.length > 30) {
         document.getElementById('usernameError').textContent = 
           'Username must be 4-30 characters long.';

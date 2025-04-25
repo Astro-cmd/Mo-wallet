@@ -27,6 +27,34 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
 
+# CORS Settings
+CORS_ALLOW_ALL_ORIGINS = DEBUG  # Only in development
+if not DEBUG:
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:3000",  # Next.js development server
+        "http://127.0.0.1:3000",
+    ]
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 # Application definition
 
@@ -38,18 +66,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
-
-    
+    'django.contrib.humanize',
+    'django.contrib.sites',
 
     # for security
     'axes',
     # apis
     'corsheaders',
     'rest_framework',
+    'rest_framework_simplejwt',
 
     # my apps
-
     'users',
     'transactions',
     'goals',
@@ -61,6 +88,8 @@ INSTALLED_APPS = [
     'core',
     'wallet',
 ]
+
+SITE_ID = 1  # Add this line
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -81,6 +110,7 @@ AUTHENTICATION_BACKENDS = (
 # login security
 AXES_FAILURE_LIMIT = 5  
 AXES_COOLOFF_TIME = 1  
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -235,8 +265,17 @@ MPESA_SHORTCODE = os.getenv('MPESA_SHORTCODE')
 MPESA_PASSKEY = os.getenv('MPESA_PASSKEY')
 MPESA_ENVIRONMENT = os.getenv('MPESA_ENVIRONMENT')
 
+SESSION_COOKIE_AGE = 1800  
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_SAVE_EVERY_REQUEST = True
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.User'
+
+# Authentication settings
+LOGIN_URL = 'users:login'
+LOGIN_REDIRECT_URL = 'dashboard'
+LOGOUT_REDIRECT_URL = 'home'
