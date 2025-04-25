@@ -1,0 +1,17 @@
+<!-- Ajax form for editing wallet -->
+<form method="post" action="{% url 'wallet:edit' wallet.id %}" id="edit-wallet-form">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="{{ form.balance.id_for_label }}">Balance</label>
+        <div class="input-group">
+            <span class="input-group-text">Ksh</span>
+            {{ form.balance }}
+        </div>
+        {% if form.balance.errors %}
+            <div class="error">{{ form.balance.errors }}</div>
+        {% endif %}
+    </div>
+    <button type="submit" class="btn btn-primary">
+        <i class="fas fa-save"></i> Save Changes
+    </button>
+</form>

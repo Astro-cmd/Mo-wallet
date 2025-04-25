@@ -119,4 +119,58 @@ document.addEventListener('DOMContentLoaded', function() {
     sections.forEach(section => {
         observer.observe(section);
     });
+
+    // Dynamic charts for income and expenses
+    const incomeData = JSON.parse(document.getElementById('income-data').textContent);
+    const expenseData = JSON.parse(document.getElementById('expense-data').textContent);
+
+    // Income Chart
+    const incomeCtx = document.getElementById('incomeChart').getContext('2d');
+    new Chart(incomeCtx, {
+        type: 'bar',
+        data: {
+            labels: incomeData.map(item => `Month ${item.date__month}`),
+            datasets: [{
+                label: 'Income',
+                data: incomeData.map(item => item.total),
+                backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+            }],
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+            },
+            scales: {
+                y: { beginAtZero: true },
+            },
+        },
+    });
+
+    // Expense Chart
+    const expenseCtx = document.getElementById('expenseChart').getContext('2d');
+    new Chart(expenseCtx, {
+        type: 'bar',
+        data: {
+            labels: expenseData.map(item => `Month ${item.date__month}`),
+            datasets: [{
+                label: 'Expenses',
+                data: expenseData.map(item => item.total),
+                backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1,
+            }],
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+            },
+            scales: {
+                y: { beginAtZero: true },
+            },
+        },
+    });
 });
