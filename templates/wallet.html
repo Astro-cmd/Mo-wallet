@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1><i class="fas fa-wallet"></i> My Wallets</h1>
+        <p>Manage your digital wallets</p>
+    </div>
+
+    <div class="card-container">
+        <!-- Wallet Creation Form -->
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-plus-circle"></i> Create Wallet</h2>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{% url 'wallet:create' %}">
+                    {% csrf_token %}
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="{{ form.name.id_for_label }}">Wallet Name</label>
+                            {{ form.name }}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.balance.id_for_label }}">Initial Balance</label>
+                            <div class="input-group">
+                                <span class="input-group-text">KES</span>
+                                {{ form.balance }}
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.currency.id_for_label }}">Currency</label>
+                            {{ form.currency }}
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label for="{{ form.description.id_for_label }}">Description</label>
+                            {{ form.description }}
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Create Wallet
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Wallets Summary -->
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-chart-pie"></i> Wallets Overview</h2>
+            </div>
+            <div class="card-body">
+                <div class="wallets-summary">
+                    <div class="summary-item">
+                        <div class="summary-label">Total Wallets</div>
+                        <div class="summary-value">{{ total_wallets }}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Total Balance</div>
+                        <div class="summary-value">Ksh {{ total_balance|default:"0" }}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Main Wallet</div>
+                        <div class="summary-value">Ksh {{ main_wallet_balance|default:"0" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wallets List -->
+    <div class="card">
+        <div class="card-header">
+            <h2><i class="fas fa-list"></i> Your Wallets</h2>
+        </div>
+        <div class="card-body">
+            {% if wallets %}
+            <div class="wallets-grid">
+                {% for wallet in wallets %}
+                <div class="wallet-card">
+                    <div class="wallet-header">
+                        <h3>{{ wallet.name }}</h3>
+                        {% if wallet.is_main %}
+                        <span class="badge primary">Main Wallet</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="wallet-balance">
+                        <span class="label">Current Balance</span>
+                        <span class="amount">{{ wallet.currency }} {{ wallet.balance|floatformat:2 }}</span>
+                    </div>
+                    
+                    <div class="wallet-info">
+                        <p>{{ wallet.description }}</p>
+                    </div>
+                    
+                    <div class="wallet-actions">
+                        <button class="btn btn-secondary transfer-funds" data-id="{{ wallet.id }}">
+                            <i class="fas fa-exchange-alt"></i> Transfer
+                        </button>
+                        <button class="btn-icon edit-wallet" data-id="{{ wallet.id }}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        {% if not wallet.is_main %}
+                        <button class="btn-icon delete-wallet" data-id="{{ wallet.id }}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-wallet"></i>
+                <p>No wallets created yet</p>
+                <p>Create your first wallet to start managing your money</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Edit Wallet Modal -->
+<div class="modal" id="edit-wallet-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Edit Wallet</h3>
+            <button class="close-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <!-- Form will be loaded via AJAX -->
+        </div>
+    </div>
+</div>
+
+<!-- Transfer Funds Modal -->
+<div class="modal" id="transfer-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Transfer Funds</h3>
+            <button class="close-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="transfer-form">
+                {% csrf_token %}
+                <input type="hidden" name="source_wallet" id="source-wallet">
+                <div class="form-group">
+                    <label for="destination-wallet">To Wallet</label>
+                    <select name="destination_wallet" id="destination-wallet" class="form-control" required>
+                        {% for wallet in wallets %}
+                        <option value="{{ wallet.id }}">{{ wallet.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="amount">Amount</label>
+                    <div class="input-group">
+                        <span class="input-group-text">KES</span>
+                        <input type="number" name="amount" id="amount" class="form-control" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <input type="text" name="description" id="description" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Transfer
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    // Edit wallet
+    $('.edit-wallet').click(function() {
+        const walletId = $(this).data('id');
+        $.get(`{% url 'wallet:edit' '0' %}`.replace('0', walletId), function(data) {
+            $('#edit-wallet-modal .modal-body').html(data);
+            $('#edit-wallet-modal').addClass('active');
+        });
+    });
+
+    // Delete wallet
+    $('.delete-wallet').click(function() {
+        if(confirm('Are you sure you want to delete this wallet? This action cannot be undone.')) {
+            const walletId = $(this).data('id');
+            $.ajax({
+                url: `{% url 'wallet:delete' '0' %}`.replace('0', walletId),
+                method: 'POST',
+                data: {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function() {
+                    location.reload();
+                }
+            });
+        }
+    });
+
+    // Transfer funds
+    $('#transfer-form').submit(function(e) {
+        e.preventDefault();
+        const formData = $(this).serialize();
+        
+        $.ajax({
+            url: '{% url "wallet:transfer" %}',
+            method: 'POST',
+            data: formData,
+            success: function() {
+                location.reload();
+            }
+        });
+    });
+
+    // Close modals
+    $('.close-modal').click(function() {
+        $('.modal').removeClass('active');
+        // Reset transfer form
+        $('#transfer-form')[0].reset();
+        $('#destination-wallet option').prop('disabled', false);
+    });
+});
+</script>
+{% endblock %}

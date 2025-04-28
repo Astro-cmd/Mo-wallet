@@ -1,0 +1,299 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}System Report - Mo Wallet Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    .report-container {
+        max-width: 1400px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .report-header {
+        background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
+        padding: 2rem;
+        border-radius: 1rem;
+        margin-bottom: 2rem;
+        color: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+        color: #1a237e;
+    }
+
+    .stat-header i {
+        margin-right: 0.5rem;
+        font-size: 1.5rem;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #0d47a1;
+    }
+
+    .stat-label {
+        color: #64748b;
+        font-size: 0.875rem;
+    }
+
+    .trend-indicator {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.5rem;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+        margin-left: 0.5rem;
+    }
+
+    .trend-up {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .trend-down {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+    .chart-section {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .category-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .category-table th,
+    .category-table td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .category-table th {
+        background: #f8fafc;
+        color: #1a237e;
+        font-weight: 600;
+    }
+
+    .growth-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .growth-item {
+        background: #f8fafc;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        text-align: center;
+    }
+
+    .growth-month {
+        font-weight: 600;
+        color: #1a237e;
+        margin-bottom: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="report-container">
+    <div class="report-header">
+        <h1 class="text-3xl font-bold mb-2">System Report</h1>
+        <p class="text-lg opacity-90">Comprehensive analytics and insights</p>
+    </div>
+
+    <!-- User Statistics -->
+    <h2 class="text-2xl font-bold mb-4">User Statistics</h2>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-header">
+                <i class="fas fa-users"></i>
+                <h3>Total Users</h3>
+            </div>
+            <div class="stat-value">{{ total_users|intcomma }}</div>
+            <div class="stat-label">
+                Active: {{ active_users|intcomma }}
+                <span class="trend-indicator {% if new_users_this_month > 0 %}trend-up{% else %}trend-down{% endif %}">
+                    <i class="fas {% if new_users_this_month > 0 %}fa-arrow-up{% else %}fa-arrow-down{% endif %} mr-1"></i>
+                    {{ new_users_this_month }} this month
+                </span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <i class="fas fa-wallet"></i>
+                <h3>Active Wallets</h3>
+            </div>
+            <div class="stat-value">{{ active_wallets|intcomma }}</div>
+            <div class="stat-label">{{ wallet_utilization }}% utilization rate</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <i class="fas fa-piggy-bank"></i>
+                <h3>Savings Goals</h3>
+            </div>
+            <div class="stat-value">{{ total_goals|intcomma }}</div>
+            <div class="stat-label">{{ completed_goals }} completed goals</div>
+        </div>
+    </div>
+
+    <!-- Transaction Statistics -->
+    <h2 class="text-2xl font-bold mb-4 mt-8">Transaction Statistics</h2>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-header">
+                <i class="fas fa-exchange-alt"></i>
+                <h3>Total Transaction Volume</h3>
+            </div>
+            <div class="stat-value">KES {{ total_transaction_volume|intcomma }}</div>
+            <div class="stat-label">Monthly: KES {{ monthly_transaction_volume|intcomma }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <i class="fas fa-arrow-circle-up"></i>
+                <h3>Total Income</h3>
+            </div>
+            <div class="stat-value">KES {{ total_income|intcomma }}</div>
+            <div class="stat-label">Monthly: KES {{ monthly_income|intcomma }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <i class="fas fa-arrow-circle-down"></i>
+                <h3>Total Expenses</h3>
+            </div>
+            <div class="stat-value">KES {{ total_expenses|intcomma }}</div>
+            <div class="stat-label">Monthly: KES {{ monthly_expenses|intcomma }}</div>
+        </div>
+    </div>
+
+    <!-- M-Pesa Integration -->
+    <h2 class="text-2xl font-bold mb-4 mt-8">M-Pesa Integration</h2>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-header">
+                <i class="fas fa-mobile-alt"></i>
+                <h3>M-Pesa Volume</h3>
+            </div>
+            <div class="stat-value">KES {{ total_mpesa_volume|intcomma }}</div>
+            <div class="stat-label">Monthly: KES {{ monthly_mpesa_volume|intcomma }}</div>
+        </div>
+    </div>
+
+    <!-- Budget Analysis -->
+    <h2 class="text-2xl font-bold mb-4 mt-8">Budget Analysis</h2>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-header">
+                <i class="fas fa-chart-pie"></i>
+                <h3>Total Budgets</h3>
+            </div>
+            <div class="stat-value">{{ total_budgets|intcomma }}</div>
+            <div class="stat-label">
+                KES {{ total_budget_amount|intcomma }} total allocated
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <i class="fas fa-coins"></i>
+                <h3>Budget Utilization</h3>
+            </div>
+            <div class="stat-value">{{ avg_budget_completion }}%</div>
+            <div class="stat-label">
+                KES {{ total_budget_spent|intcomma }} spent of {{ total_budget_amount|intcomma }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Expense Categories -->
+    <h2 class="text-2xl font-bold mb-4 mt-8">Top Expense Categories</h2>
+    <div class="chart-section">
+        <table class="category-table">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Total Amount</th>
+                    <th>Number of Transactions</th>
+                    <th>Average Transaction</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for category in top_expense_categories %}
+                <tr>
+                    <td>{{ category.category }}</td>
+                    <td>KES {{ category.total|intcomma }}</td>
+                    <td>{{ category.count|intcomma }}</td>
+                    <td>KES {{ category.total|div:category.count|floatformat:2|intcomma }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Monthly Growth -->
+    <h2 class="text-2xl font-bold mb-4 mt-8">Monthly Growth Analysis</h2>
+    <div class="chart-section">
+        <div class="growth-grid">
+            {% for month in monthly_growth %}
+            <div class="growth-item">
+                <div class="growth-month">{{ month.month }}</div>
+                <div>New Users: {{ month.new_users }}</div>
+                <div>Volume: KES {{ month.transaction_volume|intcomma }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Add any additional charts or interactive features here
+</script>
+{% endblock %}

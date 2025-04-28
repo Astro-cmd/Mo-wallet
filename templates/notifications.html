@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="fas fa-bell"></i> Notifications</h5>
+            {% if notifications %}
+            <button class="btn btn-light btn-sm" id="markAllRead">
+                <i class="fas fa-check-double"></i> Mark All as Read
+            </button>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            {% if notifications %}
+                <div class="list-group">
+                    {% for notification in notifications %}
+                    <div class="list-group-item list-group-item-action {% if not notification.is_read %}unread{% endif %}">
+                        <div class="d-flex w-100 justify-content-between align-items-center">
+                            <h6 class="mb-1">
+                                {% if notification.type == 'budget' %}
+                                    <i class="fas fa-chart-pie text-warning"></i>
+                                {% elif notification.type == 'goal' %}
+                                    <i class="fas fa-bullseye text-success"></i>
+                                {% elif notification.type == 'transaction' %}
+                                    <i class="fas fa-exchange-alt text-info"></i>
+                                {% elif notification.type == 'security' %}
+                                    <i class="fas fa-shield-alt text-danger"></i>
+                                {% else %}
+                                    <i class="fas fa-bell text-secondary"></i>
+                                {% endif %}
+                                {{ notification.title }}
+                            </h6>
+                            <small class="text-muted">{{ notification.created_at|timesince }} ago</small>
+                        </div>
+                        <p class="mb-1">{{ notification.message }}</p>
+                        {% if notification.action_url %}
+                        <a href="{{ notification.action_url }}" class="btn btn-sm btn-outline-primary mt-2">
+                            View Details
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-bell-slash fa-3x text-muted mb-3"></i>
+                    <h5>No Notifications</h5>
+                    <p class="text-muted">You're all caught up! Check back later for updates.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.unread {
+    border-left: 4px solid var(--bs-primary);
+    background-color: rgba(var(--bs-primary-rgb), 0.05);
+}
+</style>
+
+{% if notifications %}
+<script>
+document.getElementById('markAllRead').addEventListener('click', function() {
+    fetch('{% url "notifications:mark_all_read" %}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+        },
+    }).then(response => {
+        if (response.ok) {
+            location.reload();
+        }
+    });
+});
+</script>
+{% endif %}
+{% endblock %}
