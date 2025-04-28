@@ -1,0 +1,138 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up</title>
+  <link rel="stylesheet" href="{% static 'css/signup.css' %}">
+</head>
+<body>
+  <div class="container">
+    <form id="signupForm" method="post" action="{% url 'users:signup' %}" novalidate>
+      <h2>Sign Up</h2>
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div class="error non-field-error">
+          {{ form.non_field_errors.0 }}
+        </div>
+      {% endif %}
+
+      <!-- Username -->
+      <div class="input-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required
+               value="{{ form.username.value|default:'' }}">
+        <div class="error" id="usernameError">
+          {% if form.username.errors %}{{ form.username.errors.0 }}{% endif %}
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="input-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required
+               value="{{ form.email.value|default:'' }}">
+        <div class="error" id="emailError">
+          {% if form.email.errors %}{{ form.email.errors.0 }}{% endif %}
+        </div>
+      </div>
+
+      <!-- Phone Number -->
+      <div class="input-group">
+        <label for="phone_number">Phone Number</label>
+        <input type="text" id="phone_number" name="phone_number" required
+               value="{{ form.phone_number.value|default:'' }}"
+               placeholder="07... or 2547... or 01...">
+        <div class="error" id="phone_numberError">
+          {% if form.phone_number.errors %}{{ form.phone_number.errors.0 }}{% endif %}
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="input-group">
+        <label for="password1">Password</label>
+        <input type="password" id="password1" name="password1" required>
+        <div class="error" id="password1Error">
+          {% if form.password1.errors %}{{ form.password1.errors.0 }}{% endif %}
+        </div>
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="input-group">
+        <label for="password2">Confirm Password</label>
+        <input type="password" id="password2" name="password2" required>
+        <div class="error" id="password2Error">
+          {% if form.password2.errors %}{{ form.password2.errors.0 }}{% endif %}
+        </div>
+      </div>
+
+      <button type="submit" onclick="return validateForm()">Register</button>
+
+      {% if messages %}
+        {% for message in messages %}
+          <p class="{{ message.tags }}">{{ message }}</p>
+        {% endfor %}
+      {% endif %}
+
+      <p class="login-link">
+        Already have an account? <a href="{% url 'users:login' %}">Login here</a>
+      </p>
+    </form>
+  </div>
+
+  <script>
+    function validateForm() {
+      let isValid = true;
+      if (username.length < 4 || username.length > 30) {
+        document.getElementById('usernameError').textContent = 
+          'Username must be 4-30 characters long.';
+        isValid = false;
+      }
+      
+      // Email validation
+      const email = document.getElementById('email').value.trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        document.getElementById('emailError').textContent = 
+          'Please enter a valid email address.';
+        isValid = false;
+      }
+      
+      // Phone validation (07, 01, 2547, 2541)
+      const phone = document.getElementById('phone_number').value.trim();
+      if (!/^(0[17]\d{8}|01\d{8}|254[17]\d{7})$/.test(phone)) {
+        document.getElementById('phoneError').textContent = 
+          'Please enter a valid Kenyan number (07..., 01..., 2547..., or 2541...)';
+        isValid = false;
+      }
+      
+      // Password validation
+      const password1 = document.getElementById('password1').value;
+      if (password1.length < 8) {
+        document.getElementById('password1Error').textContent = 
+          'Password must be at least 8 characters.';
+        isValid = false;
+      } else if (!/[A-Z]/.test(password1) || 
+                 !/[a-z]/.test(password1) || 
+                 !/[0-9]/.test(password1) || 
+                 !/[^A-Za-z0-9]/.test(password1)) {
+        document.getElementById('password1Error').textContent = 
+          'Password must include uppercase, lowercase, number, and special character.';
+        isValid = false;
+      }
+      
+      // Password confirmation
+      const password2 = document.getElementById('password2').value;
+      if (password1 !== password2) {
+        document.getElementById('password2Error').textContent = 
+          'Passwords do not match.';
+        isValid = false;
+      }
+      
+      return isValid;
+    }
+  </script>
+</body>
+</html>

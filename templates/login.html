@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login</title>
+  <link rel="stylesheet" href="{% static 'css/login.css' %}" />
+</head>
+<body>
+  <div class="container">
+    <form method="POST" action="{% url 'users:login' %}" class="login-form">
+      {% csrf_token %}
+      <h2>Login</h2>
+
+      {% if messages %}
+        {% for message in messages %}
+          <p class="msg {{ message.tags }}">{{ message }}</p>
+        {% endfor %}
+      {% endif %}
+
+      <div class="input-group">
+        <label for="username">Username or Email</label>
+        <input type="text" name="username" id="username" required />
+      </div>
+
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" required />
+      </div>
+
+      <div class="input-group remember">
+        <label>
+          <input type="checkbox" name="remember" />
+          Remember me
+        </label>
+      </div>
+      <button type="submit">Login</button>
+
+      <p class="switch">
+        Don't have an account? 
+        <a href="{% url 'users:signup' %}" id="showSignup">Sign up</a>
+      </p>
+    </form>
+  </div>  
+      
+  <scrip src="{% static 'js/login.js' %}"></script>

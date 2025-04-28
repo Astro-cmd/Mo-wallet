@@ -1,0 +1,1118 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Help & Support - Mo Wallet{% endblock %}
+
+{% block content %}
+<div class="help-container">
+    <!-- Hero Section with Gradient Background -->
+    <section class="help-hero">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="gradient-text">How can we help you today?</span>
+                <i class="fas fa-hands-helping"></i>
+            </h1>
+            <p class="hero-subtitle">Find answers, guides, and tips to get the most out of Mo Wallet</p>
+            
+            <!-- Search Bar -->
+            <div class="search-container">
+                <input type="text" placeholder="Search help articles..." class="search-input">
+                <button class="search-button">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+        <div class="hero-illustration">
+            <img src="{% static 'images/help-illustration.svg' %}" alt="Help Illustration">
+        </div>
+    </section>
+
+    <!-- Quick Help Cards -->
+    <section class="quick-help-section">
+        <h2 class="section-title">Quick Help</h2>
+        <div class="help-cards-grid">
+            <!-- Card 1 -->
+            <div class="help-card card-getting-started">
+                <div class="card-icon">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <h3>Getting Started</h3>
+                <p>New to Mo Wallet? Learn how to set up your account</p>
+                <a href="#getting-started" class="card-link">Explore Guides <i class="fas fa-arrow-right"></i></a>
+            </div>
+            
+            <!-- Card 2 -->
+            <div class="help-card card-transactions">
+                <div class="card-icon">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <h3>Transactions</h3>
+                <p>Everything about sending, receiving and managing money</p>
+                <a href="#transactions" class="card-link">Learn More <i class="fas fa-arrow-right"></i></a>
+            </div>
+            
+            <!-- Card 3 -->
+            <div class="help-card card-budget">
+                <div class="card-icon">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <h3>Budget Tools</h3>
+                <p>Master your finances with our budgeting features</p>
+                <a href="#budgets" class="card-link">Budgeting Tips <i class="fas fa-arrow-right"></i></a>
+            </div>
+            
+            <!-- Card 4 -->
+            <div class="help-card card-savings">
+                <div class="card-icon">
+                    <i class="fas fa-piggy-bank"></i>
+                </div>
+                <h3>Savings Goals</h3>
+                <p>Reach your financial dreams with our savings tools</p>
+                <a href="#goals" class="card-link">Start Saving <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Popular Topics Accordion -->
+    <section class="topics-section">
+        <h2 class="section-title">Popular Topics</h2>
+        <div class="accordion-container">
+            <!-- Budget Management -->
+            <div class="accordion-item" id="budgets">
+                <button class="accordion-header">
+                    <div class="accordion-icon">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <h3>Budget Management</h3>
+                    <i class="fas fa-chevron-down accordion-arrow"></i>
+                </button>
+                <div class="accordion-content">
+                    <div class="content-wrapper">
+                        <div class="accordion-text">
+                            <h4>Take Control of Your Spending</h4>
+                            <p>Mo Wallet's budgeting tools help you track expenses and stay on top of your finances with intuitive visualizations and smart alerts.</p>
+                            
+                            <div class="feature-list">
+                                <div class="feature">
+                                    <i class="fas fa-check-circle"></i>
+                                    <div>
+                                        <h5>Create Custom Budgets</h5>
+                                        <p>Set spending limits for different categories and time periods</p>
+                                    </div>
+                                </div>
+                                <div class="feature">
+                                    <i class="fas fa-bell"></i>
+                                    <div>
+                                        <h5>Smart Alerts</h5>
+                                        <p>Get notified when you're approaching your budget limits</p>
+                                    </div>
+                                </div>
+                                <div class="feature">
+                                    <i class="fas fa-chart-line"></i>
+                                    <div>
+                                        <h5>Visual Reports</h5>
+                                        <p>See your spending patterns with beautiful charts and graphs</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <a href="#" class="learn-more-link">
+                                Learn more about budgeting <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                        <div class="accordion-image">
+                            <img src="{% static 'images/budget-illustration.svg' %}" alt="Budget Illustration">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Savings Goals -->
+            <div class="accordion-item" id="goals">
+                <button class="accordion-header">
+                    <div class="accordion-icon">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <h3>Savings Goals</h3>
+                    <i class="fas fa-chevron-down accordion-arrow"></i>
+                </button>
+                <div class="accordion-content">
+                    <div class="content-wrapper">
+                        <div class="accordion-text">
+                            <h4>Turn Your Dreams into Reality</h4>
+                            <p>Whether it's a vacation, new gadget, or emergency fund, our savings tools help you stay motivated and on track.</p>
+                            
+                            <div class="steps">
+                                <div class="step">
+                                    <div class="step-number">1</div>
+                                    <div>
+                                        <h5>Set Your Goal</h5>
+                                        <p>Name your goal and set a target amount and deadline</p>
+                                    </div>
+                                </div>
+                                <div class="step">
+                                    <div class="step-number">2</div>
+                                    <div>
+                                        <h5>Track Progress</h5>
+                                        <p>Watch your savings grow with visual progress indicators</p>
+                                    </div>
+                                </div>
+                                <div class="step">
+                                    <div class="step-number">3</div>
+                                    <div>
+                                        <h5>Celebrate Success</h5>
+                                        <p>Reach your goal and enjoy the rewards of disciplined saving</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <a href="#" class="learn-more-link">
+                                Learn more about savings goals <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                        <div class="accordion-image">
+                            <img src="{% static 'images/savings-illustration.svg' %}" alt="Savings Illustration">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- M-Pesa Integration -->
+            <div class="accordion-item" id="mpesa">
+                <button class="accordion-header">
+                    <div class="accordion-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>M-Pesa Integration</h3>
+                    <i class="fas fa-chevron-down accordion-arrow"></i>
+                </button>
+                <div class="accordion-content">
+                    <div class="content-wrapper">
+                        <div class="accordion-text">
+                            <h4>Seamless M-Pesa Experience</h4>
+                            <p>Connect your M-Pesa account to automatically track transactions and manage all your finances in one place.</p>
+                            
+                            <div class="feature-highlight">
+                                <div class="highlight-card">
+                                    <i class="fas fa-sync-alt"></i>
+                                    <h5>Automatic Sync</h5>
+                                    <p>Transactions appear in Mo Wallet instantly</p>
+                                </div>
+                                <div class="highlight-card">
+                                    <i class="fas fa-tags"></i>
+                                    <h5>Smart Categorization</h5>
+                                    <p>Expenses are automatically categorized</p>
+                                </div>
+                                <div class="highlight-card">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <h5>Secure Connection</h5>
+                                    <p>Bank-level security protects your data</p>
+                                </div>
+                            </div>
+                            
+                            <div class="setup-guide">
+                                <h5>How to set up:</h5>
+                                <ol>
+                                    <li>Go to Settings > M-Pesa Integration</li>
+                                    <li>Choose your connection method</li>
+                                    <li>Follow the on-screen instructions</li>
+                                    <li>Start seeing your transactions automatically</li>
+                                </ol>
+                            </div>
+                        </div>
+                        <div class="accordion-image">
+                            <img src="{% static 'images/mpesa-illustration.svg' %}" alt="M-Pesa Illustration">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Video Tutorials Section -->
+    <section class="video-section">
+        <h2 class="section-title">Video Tutorials</h2>
+        <p class="section-subtitle">Watch short videos to learn Mo Wallet features quickly</p>
+        
+        <div class="video-grid">
+            <div class="video-card">
+                <div class="video-thumbnail">
+                    <img src="{% static 'images/video-thumbnail-1.jpg' %}" alt="Getting Started">
+                    <div class="play-button">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+                <h3>Getting Started with Mo Wallet</h3>
+                <p class="video-duration">2:45 min</p>
+            </div>
+            
+            <div class="video-card">
+                <div class="video-thumbnail">
+                    <img src="{% static 'images/video-thumbnail-2.jpg' %}" alt="Budgeting">
+                    <div class="play-button">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+                <h3>Mastering Budgets</h3>
+                <p class="video-duration">3:20 min</p>
+            </div>
+            
+            <div class="video-card">
+                <div class="video-thumbnail">
+                    <img src="{% static 'images/video-thumbnail-3.jpg' %}" alt="M-Pesa">
+                    <div class="play-button">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+                <h3>M-Pesa Integration Guide</h3>
+                <p class="video-duration">4:15 min</p>
+            </div>
+        </div>
+        
+        <div class="text-center">
+            <button class="btn-view-all">
+                View All Tutorials <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </section>
+
+    <!-- Contact Support Section -->
+    <section class="contact-section">
+        <div class="contact-content">
+            <h2>Still need help?</h2>
+            <p>Our friendly support team is available 24/7 to assist you</p>
+            
+            <div class="contact-methods">
+                <a href="#" class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h4>Live Chat</h4>
+                    <p>Instant help from our team</p>
+                    <div class="contact-badge">Fastest Response</div>
+                </a>
+                
+                <a href="#" class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h4>Email Us</h4>
+                    <p>support@mowallet.com</p>
+                    <div class="contact-badge">Typically replies in 1 hour</div>
+                </a>
+                
+                <a href="#" class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                    <h4>Call Support</h4>
+                    <p>+254 700 123 456</p>
+                    <div class="contact-badge">24/7 availability</div>
+                </a>
+            </div>
+        </div>
+        
+        <div class="contact-illustration">
+            <img src="{% static 'images/support-illustration.svg' %}" alt="Support Illustration">
+        </div>
+    </section>
+</div>
+
+<style>
+    :root {
+        --primary: #6C63FF;
+        --primary-light: #8B85FF;
+        --primary-dark: #564FC9;
+        --secondary: #4FD1C5;
+        --accent: #F6AD55;
+        --success: #68D391;
+        --warning: #F6E05E;
+        --danger: #FC8181;
+        --dark: #2D3748;
+        --darker: #1A202C;
+        --gray: #718096;
+        --light: #F7FAFC;
+        --lighter: #FFFFFF;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        --rounded-sm: 0.25rem;
+        --rounded: 0.5rem;
+        --rounded-lg: 0.75rem;
+        --rounded-xl: 1rem;
+        --rounded-full: 9999px;
+    }
+
+    /* Base Styles */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        color: var(--dark);
+        line-height: 1.6;
+        background-color: var(--light);
+    }
+
+    .help-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    /* Typography */
+    h1, h2, h3, h4, h5, h6 {
+        font-weight: 600;
+        line-height: 1.2;
+    }
+
+    .gradient-text {
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline;
+    }
+
+    /* Hero Section */
+    .help-hero {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 4rem 1rem;
+        background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+        border-radius: var(--rounded-xl);
+        margin: 1rem 0 3rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .help-hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(108, 99, 255, 0.1) 0%, transparent 70%);
+        animation: rotate 15s linear infinite;
+        z-index: 0;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        max-width: 800px;
+    }
+
+    .hero-title {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .hero-title i {
+        color: var(--primary);
+    }
+
+    .hero-subtitle {
+        font-size: 1.2rem;
+        color: var(--gray);
+        margin-bottom: 2rem;
+    }
+
+    .search-container {
+        display: flex;
+        max-width: 600px;
+        margin: 0 auto;
+        box-shadow: var(--shadow-md);
+        border-radius: var(--rounded-full);
+    }
+
+    .search-input {
+        flex: 1;
+        padding: 1rem 1.5rem;
+        border: none;
+        border-radius: var(--rounded-full) 0 0 var(--rounded-full);
+        font-size: 1rem;
+        outline: none;
+    }
+
+    .search-button {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 0 1.5rem;
+        border-radius: 0 var(--rounded-full) var(--rounded-full) 0;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .search-button:hover {
+        background: var(--primary-dark);
+    }
+
+    .hero-illustration {
+        margin-top: 2rem;
+        max-width: 500px;
+    }
+
+    .hero-illustration img {
+        width: 100%;
+        height: auto;
+    }
+
+    /* Section Titles */
+    .section-title {
+        font-size: 2rem;
+        text-align: center;
+        margin-bottom: 2rem;
+        position: relative;
+        display: inline-block;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        border-radius: var(--rounded-full);
+    }
+
+    .section-subtitle {
+        text-align: center;
+        color: var(--gray);
+        margin-bottom: 2rem;
+        font-size: 1.1rem;
+    }
+
+    /* Quick Help Cards */
+    .quick-help-section {
+        margin: 4rem 0;
+    }
+
+    .help-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .help-card {
+        background: white;
+        border-radius: var(--rounded-lg);
+        padding: 2rem;
+        box-shadow: var(--shadow);
+        transition: transform 0.3s, box-shadow 0.3s;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    .help-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: var(--primary);
+        transition: height 0.3s;
+        z-index: -1;
+    }
+
+    .help-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .help-card:hover::before {
+        height: 100%;
+    }
+
+    .help-card:hover .card-icon {
+        background: white;
+        color: var(--primary);
+    }
+
+    .help-card:hover h3,
+    .help-card:hover p,
+    .help-card:hover .card-link {
+        color: white;
+    }
+
+    .card-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: var(--rounded);
+        background: rgba(108, 99, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+        color: var(--primary);
+        font-size: 1.5rem;
+        transition: all 0.3s;
+    }
+
+    .help-card h3 {
+        font-size: 1.3rem;
+        margin-bottom: 0.75rem;
+        transition: color 0.3s;
+    }
+
+    .help-card p {
+        color: var(--gray);
+        margin-bottom: 1.5rem;
+        transition: color 0.3s;
+    }
+
+    .card-link {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--primary);
+        font-weight: 500;
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+    /* Card Color Variants */
+    .card-getting-started::before {
+        background: var(--primary);
+    }
+
+    .card-transactions::before {
+        background: var(--secondary);
+    }
+
+    .card-budget::before {
+        background: #9F7AEA;
+    }
+
+    .card-savings::before {
+        background: var(--success);
+    }
+
+    /* Accordion Styles */
+    .accordion-container {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .accordion-item {
+        background: white;
+        border-radius: var(--rounded);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 1rem;
+        overflow: hidden;
+        transition: box-shadow 0.3s;
+    }
+
+    .accordion-item:hover {
+        box-shadow: var(--shadow);
+    }
+
+    .accordion-header {
+        width: 100%;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        text-align: left;
+    }
+
+    .accordion-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--rounded);
+        background: rgba(108, 99, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary);
+        flex-shrink: 0;
+    }
+
+    .accordion-header h3 {
+        font-size: 1.2rem;
+        flex: 1;
+    }
+
+    .accordion-arrow {
+        transition: transform 0.3s;
+        color: var(--gray);
+    }
+
+    .accordion-item.active .accordion-arrow {
+        transform: rotate(180deg);
+    }
+
+    .accordion-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+    }
+
+    .content-wrapper {
+        display: flex;
+        padding: 0 1.5rem 1.5rem;
+        gap: 2rem;
+    }
+
+    .accordion-text {
+        flex: 1;
+    }
+
+    .accordion-image {
+        flex: 1;
+        display: none;
+    }
+
+    .accordion-text h4 {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+        color: var(--primary-dark);
+    }
+
+    .feature-list {
+        margin: 1.5rem 0;
+    }
+
+    .feature {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        align-items: flex-start;
+    }
+
+    .feature i {
+        color: var(--success);
+        font-size: 1.2rem;
+        margin-top: 0.2rem;
+    }
+
+    .feature h5 {
+        font-size: 1rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .feature p {
+        color: var(--gray);
+        font-size: 0.9rem;
+    }
+
+    .steps {
+        margin: 1.5rem 0;
+    }
+
+    .step {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        align-items: flex-start;
+    }
+
+    .step-number {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: bold;
+        flex-shrink: 0;
+    }
+
+    .step h5 {
+        font-size: 1rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .step p {
+        color: var(--gray);
+        font-size: 0.9rem;
+    }
+
+    .learn-more-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--primary);
+        font-weight: 500;
+        text-decoration: none;
+        margin-top: 1rem;
+    }
+
+    .learn-more-link:hover {
+        text-decoration: underline;
+    }
+
+    .feature-highlight {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin: 1.5rem 0;
+    }
+
+    .highlight-card {
+        background: rgba(108, 99, 255, 0.05);
+        border-radius: var(--rounded);
+        padding: 1rem;
+        text-align: center;
+    }
+
+    .highlight-card i {
+        font-size: 1.5rem;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .highlight-card h5 {
+        font-size: 0.9rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .highlight-card p {
+        color: var(--gray);
+        font-size: 0.8rem;
+    }
+
+    .setup-guide {
+        background: rgba(79, 209, 197, 0.05);
+        border-radius: var(--rounded);
+        padding: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .setup-guide h5 {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+        color: var(--secondary);
+    }
+
+    .setup-guide ol {
+        padding-left: 1.2rem;
+    }
+
+    .setup-guide li {
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    /* Video Section */
+    .video-section {
+        margin: 4rem 0;
+        padding: 2rem 0;
+    }
+
+    .video-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .video-card {
+        background: white;
+        border-radius: var(--rounded);
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        transition: transform 0.3s;
+    }
+
+    .video-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .video-thumbnail {
+        position: relative;
+        padding-top: 56.25%; /* 16:9 Aspect Ratio */
+        overflow: hidden;
+    }
+
+    .video-thumbnail img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .play-button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary);
+        font-size: 1.5rem;
+        transition: all 0.3s;
+    }
+
+    .video-card:hover .play-button {
+        background: var(--primary);
+        color: white;
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+
+    .video-card h3 {
+        padding: 1rem;
+        font-size: 1.1rem;
+    }
+
+    .video-duration {
+        padding: 0 1rem 1rem;
+        color: var(--gray);
+        font-size: 0.9rem;
+    }
+
+    .btn-view-all {
+        background: white;
+        color: var(--primary);
+        border: 1px solid var(--primary);
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--rounded-full);
+        font-weight: 500;
+        margin-top: 2rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-view-all:hover {
+        background: var(--primary);
+        color: white;
+        box-shadow: var(--shadow-md);
+    }
+
+    /* Contact Section */
+    .contact-section {
+        display: flex;
+        flex-direction: column;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        border-radius: var(--rounded-xl);
+        overflow: hidden;
+        margin: 4rem 0;
+    }
+
+    .contact-content {
+        padding: 3rem 2rem;
+        color: white;
+        text-align: center;
+    }
+
+    .contact-content h2 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .contact-content p {
+        margin-bottom: 2rem;
+        opacity: 0.9;
+    }
+
+    .contact-methods {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .contact-card {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: var(--rounded);
+        padding: 1.5rem;
+        text-align: center;
+        color: white;
+        text-decoration: none;
+        transition: transform 0.3s, background 0.3s;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .contact-card:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .contact-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-size: 1.5rem;
+    }
+
+    .contact-card h4 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .contact-card p {
+        margin-bottom: 0.5rem;
+        opacity: 0.8;
+        font-size: 0.9rem;
+    }
+
+    .contact-badge {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: var(--rounded-full);
+        padding: 0.25rem 0.75rem;
+        font-size: 0.75rem;
+        display: inline-block;
+        margin-top: 0.5rem;
+    }
+
+    .contact-illustration {
+        padding: 1rem;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .contact-illustration img {
+        width: 100%;
+        height: auto;
+    }
+
+    /* Animations */
+    @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    /* Responsive Styles */
+    @media (min-width: 768px) {
+        .help-hero {
+            flex-direction: row;
+            text-align: left;
+            padding: 4rem;
+        }
+
+        .hero-content {
+            flex: 1;
+        }
+
+        .hero-illustration {
+            flex: 1;
+            margin-top: 0;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+        }
+
+        .accordion-image {
+            display: block;
+        }
+
+        .contact-section {
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .contact-content {
+            flex: 1;
+            text-align: left;
+            padding: 4rem;
+        }
+
+        .contact-methods {
+            justify-items: start;
+        }
+
+        .contact-card {
+            text-align: left;
+        }
+
+        .contact-icon {
+            margin-left: 0;
+        }
+
+        .contact-illustration {
+            flex: 1;
+            padding: 2rem;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .hero-title {
+            font-size: 3rem;
+        }
+    }
+</style>
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+{% endblock %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Accordion functionality
+        const accordionHeaders = document.querySelectorAll('.accordion-header');
+        
+        accordionHeaders.forEach(header => {
+            header.addEventListener('click', function() {
+                const accordionItem = this.parentElement;
+                const accordionContent = this.nextElementSibling;
+                
+                // Close all other accordion items
+                document.querySelectorAll('.accordion-item').forEach(item => {
+                    if (item !== accordionItem) {
+                        item.classList.remove('active');
+                        item.querySelector('.accordion-content').style.maxHeight = null;
+                    }
+                });
+                
+                // Toggle current item
+                accordionItem.classList.toggle('active');
+                
+                if (accordionContent.style.maxHeight) {
+                    accordionContent.style.maxHeight = null;
+                } else {
+                    accordionContent.style.maxHeight = accordionContent.scrollHeight + 'px';
+                }
+            });
+        });
+        
+        // Open first accordion by default
+        if (accordionHeaders.length > 0) {
+            accordionHeaders[0].click();
+        }
+    });
+</script>
+{% endblock %}

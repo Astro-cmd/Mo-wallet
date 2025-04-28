@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1><i class="fas fa-chart-pie"></i> Budgets</h1>
+        <p>Manage your monthly spending limits</p>
+    </div>
+
+    <div class="card-container">
+        <!-- Budget Creation Form -->
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-plus-circle"></i> Create Budget</h2>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{% url 'budget:budgets' %}">
+                    {% csrf_token %}
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="{{ form.category.id_for_label }}">Category</label>
+                            {{ form.category }}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.limit.id_for_label }}">Monthly Limit</label>
+                            <div class="input-group">
+                                <span class="input-group-text">KES</span>
+                                {{ form.limit }}
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Budget
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Budget Summary -->
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-chart-bar"></i> Budget Overview</h2>
+            </div>
+            <div class="card-body">
+                <div class="budget-summary">
+                    <div class="summary-item">
+                        <div class="summary-label">Total Budget</div>
+                        <div class="summary-value">Ksh {{ total_budget|floatformat:2|intcomma }}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Amount Spent</div>
+                        <div class="summary-value">Ksh {{ total_spent|floatformat:2|intcomma }}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Remaining</div>
+                        <div class="summary-value">Ksh {{ remaining_budget|floatformat:2|intcomma }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Budgets List -->
+    <div class="card">
+        <div class="card-header">
+            <h2><i class="fas fa-list"></i> Your Budgets</h2>
+        </div>
+        <div class="card-body">
+            {% if budgets %}
+            <div class="budgets-grid">
+                {% for budget in budgets %}
+                <div class="budget-card {% if budget.percentage_used > 90 %}danger{% elif budget.percentage_used > 75 %}warning{% else %}safe{% endif %}">
+                    <div class="budget-header">
+                        <h3>{{ budget.get_category_display }}</h3>
+                        <span class="budget-status">
+                            {% if budget.percentage_used > 90 %}
+                                <i class="fas fa-exclamation-circle"></i> Over Budget
+                            {% elif budget.percentage_used > 75 %}
+                                <i class="fas fa-exclamation-triangle"></i> Near Limit
+                            {% else %}
+                                <i class="fas fa-check-circle"></i> On Track
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    <div class="budget-progress">
+                        <div class="progress-info">
+                            <span>KES {{ budget.amount_spent|floatformat:2|intcomma }} of KES {{ budget.limit|floatformat:2|intcomma }}</span>
+                            <span>{{ budget.percentage_used|floatformat:1 }}%</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" style="width: {{ budget.percentage_used }}%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="budget-actions">
+                        <button class="btn-icon edit-budget" data-id="{{ budget.id }}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-icon delete-budget" data-id="{{ budget.id }}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-chart-pie"></i>
+                <p>No budgets created yet</p>
+                <a href="{% url 'budget:create' %}" class="btn btn-primary">Create your first budget</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Edit Budget Modal -->
+<div class="modal" id="edit-budget-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Edit Budget</h3>
+            <button class="close-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <!-- Form will be loaded via AJAX -->
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Format currency inputs
+    function formatCurrency(amount) {
+        return new Intl.NumberFormat('en-KE', {
+            style: 'currency',
+            currency: 'KES',
+            minimumFractionDigits: 2
+        }).format(amount);
+    }
+
+    // Edit budget
+    $('.edit-budget').click(function() {
+        const budgetId = $(this).data('id');
+        $.get(`{% url 'budget:edit' '0' %}`.replace('0', budgetId), function(data) {
+            $('#edit-budget-modal .modal-body').html(data);
+            $('#edit-budget-modal').addClass('active');
+        });
+    });
+
+    // Delete budget
+    $('.delete-budget').click(function() {
+        if(confirm('Are you sure you want to delete this budget?')) {
+            const budgetId = $(this).data('id');
+            $.ajax({
+                url: `{% url 'budget:delete' '0' %}`.replace('0', budgetId),
+                method: 'POST',
+                data: {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function() {
+                    location.reload();
+                }
+            });
+        }
+    });
+
+    // Close modal
+    $('.close-modal').click(function() {
+        $('#edit-budget-modal').removeClass('active');
+    });
+});
+</script>
+{% endblock %}

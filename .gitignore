@@ -1,0 +1,22 @@
+# Ignore Python bytecode files
+__pycache__/
+*.py[cod]
+
+# Ignore environment variables
+.env
+
+# Ignore database files
+*.sqlite3
+
+# Ignore log files
+*.log
+
+# Ignore migrations
+*/migrations/*
+*.pyc
+*.pyo
+*.env.local
+
+# Ignore coverage reports
+*.coverage
+coverage.xml    
