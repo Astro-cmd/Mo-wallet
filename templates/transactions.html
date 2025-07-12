@@ -195,6 +195,74 @@ $(document).ready(function() {
     $('input[type="text"], input[type="number"], textarea').addClass('form-control');
 
     // Rest of your existing JavaScript code without datetime handling...
+    // Handle Edit Transaction button click
+    $(document).on('click', '.edit-btn', function() {
+        var transactionId = $(this).data('id');
+        $.ajax({
+            url: '/transactions/' + transactionId + '/edit/',
+            type: 'GET',
+            success: function(response) {
+                $('#editTransactionModal .modal-body').html(response);
+                $('#editTransactionModal').modal('show');
+            },
+            error: function() {
+                alert('Failed to load edit form.');
+            }
+        });
+    });
+
+    // Handle Edit Transaction form submit (AJAX)
+    $(document).on('submit', '#editTransactionForm', function(e) {
+        e.preventDefault();
+        var form = $(this);
+        var transactionId = form.find('input[name="id"]').val();
+        $.ajax({
+            url: '/transactions/' + transactionId + '/edit/',
+            type: 'POST',
+            data: form.serialize(),
+            success: function(response) {
+                if (response.success) {
+                    location.reload();
+                } else {
+                    $('#editTransactionModal .modal-body').html(response.html);
+                }
+            },
+            error: function() {
+                alert('Failed to update transaction.');
+            }
+        });
+    });
+
+    // Handle Delete Transaction button click
+    var deleteTransactionId = null;
+    $(document).on('click', '.delete-btn', function() {
+        deleteTransactionId = $(this).data('id');
+        $('#deleteConfirmModal').modal('show');
+    });
+
+    // Handle Confirm Delete button
+    $('#confirmDelete').on('click', function() {
+        if (deleteTransactionId) {
+            $.ajax({
+                url: '/transactions/' + deleteTransactionId + '/delete/',
+                type: 'POST',
+                data: {
+                    'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val()
+                },
+                success: function(response) {
+                    if (response.success) {
+                        location.reload();
+                    } else {
+                        alert('Failed to delete transaction.');
+                    }
+                },
+                error: function() {
+                    alert('Failed to delete transaction.');
+                }
+            });
+        }
+        $('#deleteConfirmModal').modal('hide');
+    });
 });
 </script>
 {% endblock %}
