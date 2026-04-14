@@ -1,0 +1,327 @@
+{% extends 'base_vision.html' %}
+{% load humanize %}
+{% load custom_filters %}
+
+{% block title %}Budgets - Mo Wallet{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <!-- Page Header -->
+    <div class="flex-between page-header">
+        <div>
+            <h1 class="page-title">Budgets</h1>
+            <p class="page-subtitle">Manage and track your spending limits</p>
+        </div>
+        <button class="btn btn-primary" data-toggle="modal" data-target="#newBudgetModal">
+            <i class="fas fa-plus"></i> Create Budget
+        </button>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-3 mb-lg">
+        <div class="card stat-card animate-fade-in">
+            <div class="stat-content">
+                <span class="stat-label">Total Budget</span>
+                <div class="stat-value">KES {{ total_budget|floatformat:0|intcomma }}</div>
+                <p class="text-small mt-md">Across {{ budgets|length }} categories</p>
+            </div>
+            <div class="stat-icon" style="background: linear-gradient(135deg, #5B21B6 0%, #8B5CF6 100%);">
+                <i class="fas fa-calculator"></i>
+            </div>
+        </div>
+
+        <div class="card stat-card animate-fade-in" style="animation-delay: 50ms;">
+            <div class="stat-content">
+                <span class="stat-label">Amount Spent</span>
+                <div class="stat-value">KES {{ total_spent|floatformat:0|intcomma }}</div>
+                <p class="text-small mt-md">{{ spent_percentage|floatformat:0 }}% of total</p>
+            </div>
+            <div class="stat-icon" style="background: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%);">
+                <i class="fas fa-credit-card"></i>
+            </div>
+        </div>
+
+        <div class="card stat-card animate-fade-in" style="animation-delay: 100ms;">
+            <div class="stat-content">
+                <span class="stat-label">Remaining</span>
+                <div class="stat-value">KES {{ remaining_budget|floatformat:0|intcomma }}</div>
+                <p class="text-small mt-md">Available to spend</p>
+            </div>
+            <div class="stat-icon" style="background: linear-gradient(135deg, #10B981 0%, #34D399 100%);">
+                <i class="fas fa-check-circle"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Budgets Grid -->
+    <div class="grid grid-2 gap-lg">
+        {% for budget in budgets %}
+        <div class="card animate-fade-in" style="animation-delay: {{ forloop.counter|add:2|mul:50 }}ms;">
+            <!-- Header -->
+            <div class="flex-between mb-lg">
+                <div>
+                    <h3 style="margin: 0 0 var(--space-sm) 0;">{{ budget.get_category_display }}</h3>
+                    <p class="text-small">{{ budget.category }}</p>
+                </div>
+                <div class="flex gap-md">
+                    <button class="btn btn-ghost btn-sm" data-toggle="modal" data-target="#editBudgetModal{{ budget.id }}" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-ghost btn-sm" onclick="if(confirm('Delete this budget?')) { location.href='{% url 'budget:delete' budget.id %}'; }" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Amount Info -->
+            <div class="flex-between mb-lg p-md" style="background: rgba(91, 33, 182, 0.05); border-radius: var(--radius-md);">
+                <div>
+                    <p class="text-small">Spent</p>
+                    <div style="font-size: 1.5rem; font-weight: 700;">
+                        KES {{ budget.amount_spent|floatformat:0|intcomma }}
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <p class="text-small">Limit</p>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-secondary-color);">
+                        KES {{ budget.limit|floatformat:0|intcomma }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bar with Status -->
+            <div class="mb-lg">
+                <div class="flex-between mb-md">
+                    <span class="text-small">Progress</span>
+                    <span class="badge {% if budget.percentage_used >= 90 %}badge-danger{% elif budget.percentage_used >= 75 %}badge-warning{% else %}badge-success{% endif %}">
+                        {{ budget.percentage_used|floatformat:0 }}%
+                    </span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill {% if budget.percentage_used >= 90 %}danger{% elif budget.percentage_used >= 75 %}warning{% else %}success{% endif %}"
+                         style="width: {{ budget.percentage_used }}%;"></div>
+                </div>
+            </div>
+
+            <!-- Status Message -->
+            <div style="
+                padding: var(--space-md);
+                border-radius: var(--radius-md);
+                {% if budget.percentage_used >= 90 %}
+                    background: rgba(239, 68, 68, 0.1);
+                    border: 1px solid rgba(239, 68, 68, 0.3);
+                {% elif budget.percentage_used >= 75 %}
+                    background: rgba(245, 158, 11, 0.1);
+                    border: 1px solid rgba(245, 158, 11, 0.3);
+                {% else %}
+                    background: rgba(16, 185, 129, 0.1);
+                    border: 1px solid rgba(16, 185, 129, 0.3);
+                {% endif %}
+            ">
+                <p class="text-small" style="margin: 0;">
+                    {% if budget.percentage_used >= 90 %}
+                        <i class="fas fa-exclamation-circle"></i>
+                        <strong>Over Budget!</strong> You've exceeded your limit by KES {{ budget.amount_spent|add:budget.limit|floatformat:0|intcomma }}.
+                    {% elif budget.percentage_used >= 75 %}
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Near Limit</strong> Only KES {{ budget.remaining|floatformat:0|intcomma }} remaining.
+                    {% else %}
+                        <i class="fas fa-check-circle"></i>
+                        <strong>On Track</strong> KES {{ budget.remaining|floatformat:0|intcomma }} available.
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="flex gap-md mt-lg">
+                <a href="{% url 'transactions:transactions' %}?category={{ budget.category }}" class="btn btn-secondary btn-sm" style="flex: 1; justify-content: center;">
+                    <i class="fas fa-list"></i> View Transactions
+                </a>
+                <button class="btn btn-ghost btn-sm" onclick="copyToClipboard('KES {{ budget.limit|floatformat:0|intcomma }}')">
+                    <i class="fas fa-copy"></i>
+                </button>
+            </div>
+        </div>
+        {% empty %}
+        <div style="grid-column: 1 / -1;">
+            <div style="
+                text-align: center;
+                padding: var(--space-2xl);
+                border: 2px dashed var(--border);
+                border-radius: var(--radius-lg);
+            ">
+                <i class="fas fa-inbox" style="font-size: 3rem; color: var(--text-muted); margin-bottom: var(--space-md);"></i>
+                <h3>No Budgets Yet</h3>
+                <p class="text-small" style="margin-bottom: var(--space-lg);">Create your first budget to start tracking spending</p>
+                <button class="btn btn-primary" data-toggle="modal" data-target="#newBudgetModal">
+                    <i class="fas fa-plus"></i> Create Budget
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Category Breakdown Chart -->
+    {% if budgets %}
+    <div class="card mt-lg animate-fade-in" style="animation-delay: 500ms;">
+        <h3>Budget Distribution</h3>
+        <p class="text-small mb-lg">Allocation by category</p>
+        <canvas id="budgetChart" style="height: 300px;"></canvas>
+    </div>
+    {% endif %}
+</div>
+
+<!-- New Budget Modal -->
+<div id="newBudgetModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1050; align-items: center; justify-content: center;">
+    <div class="card" style="width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto;">
+        <div class="flex-between mb-lg">
+            <h2 style="margin: 0;">Create New Budget</h2>
+            <button onclick="closeModal('newBudgetModal')" class="btn btn-ghost" style="width: 40px; height: 40px; padding: 0;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <form method="post" action="{% url 'budget:budgets' %}">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label class="form-label">Category *</label>
+                <select name="category" class="form-select" required>
+                    <option value="">Select a category</option>
+                    <option value="food">Food & Dining</option>
+                    <option value="transport">Transport</option>
+                    <option value="utilities">Utilities</option>
+                    <option value="entertainment">Entertainment</option>
+                    <option value="shopping">Shopping</option>
+                    <option value="health">Health & Fitness</option>
+                    <option value="education">Education</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Monthly Limit (KES) *</label>
+                <div style="display: flex; align-items: center; gap: var(--space-md);">
+                    <span style="font-weight: 600;">KES</span>
+                    <input type="number" name="limit" class="form-input" placeholder="10,000" required step="100">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: var(--space-md); margin-top: var(--space-xl);">
+                <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="closeModal('newBudgetModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="flex: 1;">
+                    <i class="fas fa-check"></i> Create Budget
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openModal(id) {
+        document.getElementById(id).style.display = 'flex';
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).style.display = 'none';
+    }
+
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text);
+        alert('Copied to clipboard!');
+    }
+
+    // Close modal when clicking outside
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    });
+
+    // Charts
+    {% if budgets %}
+    const budgetCtx = document.getElementById('budgetChart');
+    if (budgetCtx) {
+        new Chart(budgetCtx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    {% for budget in budgets %}'{{ budget.get_category_display }}',{% endfor %}
+                ],
+                datasets: [
+                    {
+                        label: 'Spent',
+                        data: [
+                            {% for budget in budgets %}{{ budget.amount_spent }},{% endfor %}
+                        ],
+                        backgroundColor: 'rgba(239, 68, 68, 0.8)',
+                        borderRadius: 8,
+                    },
+                    {
+                        label: 'Remaining',
+                        data: [
+                            {% for budget in budgets %}{{ budget.remaining }},{% endfor %}
+                        ],
+                        backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                        borderRadius: 8,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: 'var(--text-color)',
+                            font: { size: 12, weight: '500' },
+                            usePointStyle: true,
+                            padding: 20,
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                        grid: { color: 'var(--border)' },
+                        ticks: { color: 'var(--text-secondary-color)' },
+                    },
+                    y: {
+                        stacked: true,
+                        grid: { display: false },
+                        ticks: { color: 'var(--text-secondary-color)' },
+                    }
+                }
+            }
+        });
+    }
+    {% endif %}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+.p-md { padding: var(--space-md); }
+.mt-lg { margin-top: var(--space-lg); }
+
+.modal {
+    display: none !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1050;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.show {
+    display: flex !important;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,403 @@
+{% extends 'base_vision.html' %}
+{% load humanize %}
+{% load custom_filters %}
+
+{% block title %}Dashboard - Mo Wallet{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-subtitle">Welcome back! Here's your financial overview</p>
+    </div>
+
+    <!-- Quick Stats Grid -->
+    <div class="grid grid-4 mb-lg">
+        <!-- Today's Income -->
+        <div class="card stat-card animate-fade-in">
+            <div class="stat-content">
+                <span class="stat-label">
+                    <i class="fas fa-arrow-down"></i> Today's Income
+                </span>
+                <div class="stat-value">KES {{ today_income|floatformat:0|intcomma }}</div>
+                <div class="stat-trend positive">
+                    <i class="fas fa-arrow-up-right"></i>
+                    {{ income_trend|add:"%" }}
+                </div>
+            </div>
+            <div class="stat-icon" style="background: linear-gradient(135deg, #10B981 0%, #34D399 100%);">
+                <i class="fas fa-arrow-trend-up"></i>
+            </div>
+        </div>
+
+        <!-- Today's Expenses -->
+        <div class="card stat-card animate-fade-in" style="animation-delay: 50ms;">
+            <div class="stat-content">
+                <span class="stat-label">
+                    <i class="fas fa-arrow-up"></i> Today's Expenses
+                </span>
+                <div class="stat-value">KES {{ today_expenses|floatformat:0|intcomma }}</div>
+                <div class="stat-trend {% if expense_trend > 0 %}negative{% else %}positive{% endif %}">
+                    <i class="fas fa-arrow-{% if expense_trend > 0 %}down-right{% else %}up-right{% endif %}"></i>
+                    {{ expense_trend|add:"%" }}
+                </div>
+            </div>
+            <div class="stat-icon" style="background: linear-gradient(135deg, #EF4444 0%, #F87171 100%);">
+                <i class="fas fa-arrow-trend-down"></i>
+            </div>
+        </div>
+
+        <!-- Monthly Savings -->
+        <div class="card stat-card animate-fade-in" style="animation-delay: 100ms;">
+            <div class="stat-content">
+                <span class="stat-label">
+                    <i class="fas fa-piggy-bank"></i> Monthly Savings
+                </span>
+                <div class="stat-value">KES {{ monthly_savings|floatformat:0|intcomma }}</div>
+                <div class="stat-trend positive">
+                    <i class="fas fa-arrow-up-right"></i>
+                    {{ savings_rate|add:"%" }}
+                </div>
+            </div>
+            <div class="stat-icon" style="background: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%);">
+                <i class="fas fa-wallet"></i>
+            </div>
+        </div>
+
+        <!-- Active Goals -->
+        <div class="card stat-card animate-fade-in" style="animation-delay: 150ms;">
+            <div class="stat-content">
+                <span class="stat-label">
+                    <i class="fas fa-bullseye"></i> Active Goals
+                </span>
+                <div class="stat-value">{{ active_goals_count }}</div>
+                <div class="stat-trend neutral">
+                    <i class="fas fa-star"></i>
+                    Keep Going!
+                </div>
+            </div>
+            <div class="stat-icon" style="background: linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%);">
+                <i class="fas fa-target"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="grid grid-2 gap-lg">
+        <!-- Left Column -->
+        <div>
+            <!-- Monthly Income vs Expenses -->
+            <div class="card mb-lg animate-fade-in">
+                <div class="flex-between mb-lg">
+                    <div>
+                        <h3>Financial Overview</h3>
+                        <p class="text-small">Monthly income and expenses</p>
+                    </div>
+                    <select class="form-select" style="width: auto; min-width: 150px;">
+                        <option>This Month</option>
+                        <option>Last Month</option>
+                        <option>Last 3 Months</option>
+                        <option>Last 6 Months</option>
+                    </select>
+                </div>
+
+                <!-- Income vs Expenses Bars -->
+                <div class="mb-lg">
+                    <div class="flex-between mb-md">
+                        <div>
+                            <p class="text-small">Income</p>
+                            <div style="font-size: 1.5rem; font-weight: 700; margin-top: 0.25rem;">
+                                KES {{ total_income|floatformat:0|intcomma }}
+                            </div>
+                        </div>
+                        <div style="width: 40%; text-align: right;">
+                            <span class="badge badge-success">
+                                <i class="fas fa-arrow-up"></i> +15%
+                            </span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill success" style="width: {{ income_percentage }}%;"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex-between mb-md">
+                        <div>
+                            <p class="text-small">Expenses</p>
+                            <div style="font-size: 1.5rem; font-weight: 700; margin-top: 0.25rem;">
+                                KES {{ total_expenses|floatformat:0|intcomma }}
+                            </div>
+                        </div>
+                        <div style="width: 40%; text-align: right;">
+                            <span class="badge badge-warning">
+                                <i class="fas fa-arrow-down"></i> +8%
+                            </span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill warning" style="width: {{ expense_percentage }}%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Budget Status -->
+            <div class="card animate-fade-in" style="animation-delay: 50ms;">
+                <div class="flex-between mb-lg">
+                    <div>
+                        <h3>Budget Status</h3>
+                        <p class="text-small">Current month progress</p>
+                    </div>
+                    <a href="{% url 'budget:budgets' %}" class="btn btn-ghost btn-sm">
+                        View All <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                {% for budget in budgets %}
+                <div class="mb-lg" style="{% if not forloop.last %}padding-bottom: var(--space-lg); border-bottom: 1px solid var(--border);{% endif %}">
+                    <div class="flex-between mb-md">
+                        <div>
+                            <p class="text-small">{{ budget.get_category_display }}</p>
+                            <div style="font-weight: 600; margin-top: 0.25rem;">
+                                KES {{ budget.amount_spent|floatformat:0|intcomma }} / {{ budget.limit|floatformat:0|intcomma }}
+                            </div>
+                        </div>
+                        <span class="badge {% if budget.percentage_used >= 90 %}badge-danger{% elif budget.percentage_used >= 75 %}badge-warning{% else %}badge-success{% endif %}">
+                            {{ budget.percentage_used|floatformat:0 }}%
+                        </span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill {% if budget.percentage_used >= 90 %}danger{% elif budget.percentage_used >= 75 %}warning{% else %}success{% endif %}" 
+                             style="width: {{ budget.percentage_used }}%;"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div>
+            <!-- Active Goals -->
+            <div class="card mb-lg animate-fade-in" style="animation-delay: 100ms;">
+                <div class="flex-between mb-lg">
+                    <div>
+                        <h3>Savings Goals</h3>
+                        <p class="text-small">Track your progress</p>
+                    </div>
+                    <a href="{% url 'goals:goals' %}" class="btn btn-ghost btn-sm">
+                        Add <i class="fas fa-plus"></i>
+                    </a>
+                </div>
+
+                {% for goal in active_goals|slice:":3" %}
+                <div class="mb-lg" style="{% if not forloop.last %}padding-bottom: var(--space-lg); border-bottom: 1px solid var(--border);{% endif %}">
+                    <div class="flex-between mb-md">
+                        <div>
+                            <h4 style="margin: 0 0 0.25rem 0; font-size: 1rem;">{{ goal.goal_name }}</h4>
+                            <p class="text-small">
+                                <span class="text-secondary">Target: KES {{ goal.target_amount|intcomma }}</span>
+                            </p>
+                        </div>
+                        <div>
+                            <div style="font-weight: 700; text-align: right;">{{ goal.progress|floatformat:0 }}%</div>
+                            <p class="text-xs">{{ goal.days_left }} days left</p>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {{ goal.progress }}%;"></div>
+                    </div>
+                    <p class="text-xs mt-md">
+                        <strong>KES {{ goal.current_savings|intcomma }}</strong> of KES {{ goal.target_amount|intcomma }}
+                    </p>
+                </div>
+                {% empty %}
+                <div style="text-align: center; padding: var(--space-xl) 0;">
+                    <i class="fas fa-rocket" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: var(--space-md);"></i>
+                    <p class="text-small">No active goals yet</p>
+                    <a href="{% url 'goals:goals' %}" class="btn btn-primary btn-sm mt-md">
+                        Create Your First Goal
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="card animate-fade-in" style="animation-delay: 150ms;">
+                <div class="flex-between mb-lg">
+                    <div>
+                        <h3>Recent Transactions</h3>
+                        <p class="text-small">Your latest activity</p>
+                    </div>
+                    <a href="{% url 'transactions:transactions' %}" class="btn btn-ghost btn-sm">
+                        View All <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                <div>
+                    {% for transaction in recent_transactions|slice:":5" %}
+                    <div class="flex-between py-md" style="{% if not forloop.last %}border-bottom: 1px solid var(--border);{% endif %}">
+                        <div class="flex gap-md">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(91, 33, 182, 0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <i class="fas fa-{% if transaction.transaction_type == 'income' %}arrow-down{% else %}arrow-up{% endif %}" style="color: {% if transaction.transaction_type == 'income' %}var(--success){% else %}var(--text-color){% endif %};"></i>
+                            </div>
+                            <div>
+                                <p style="margin: 0; font-weight: 500;">{{ transaction.description|truncatewords:3 }}</p>
+                                <p class="text-xs" style="margin: 0.25rem 0 0 0;">
+                                    {{ transaction.get_category_display }} • {{ transaction.transaction_date|date:"M d" }}
+                                </p>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <p style="margin: 0; font-weight: 600; {% if transaction.transaction_type == 'income' %}color: var(--success){% endif %}">
+                                {% if transaction.transaction_type == 'income' %}+{% else %}-{% endif %}KES {{ transaction.amount|intcomma }}
+                            </p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Charts Grid -->
+    <div class="grid grid-2 gap-lg mt-lg">
+        <!-- Expense Breakdown -->
+        <div class="card animate-fade-in" style="animation-delay: 200ms;">
+            <h3>Expense Breakdown</h3>
+            <p class="text-small mb-lg">By category this month</p>
+            
+            <canvas id="expenseChart" style="height: 300px;"></canvas>
+        </div>
+
+        <!-- Spending Trends -->
+        <div class="card animate-fade-in" style="animation-delay: 250ms;">
+            <h3>Spending Trends</h3>
+            <p class="text-small mb-lg">Last 6 months overview</p>
+            
+            <canvas id="trendChart" style="height: 300px;"></canvas>
+        </div>
+    </div>
+</div>
+
+<style>
+.py-md {
+  padding: var(--space-md) 0;
+}
+
+.py-lg {
+  padding: var(--space-lg) 0;
+}
+
+.mb-lg {
+  margin-bottom: var(--space-lg);
+}
+
+.mt-md {
+  margin-top: var(--space-md);
+}
+
+.mt-lg {
+  margin-top: var(--space-lg);
+}
+
+.badge {
+  display: inline-flex;
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Expense Chart
+    const expenseCtx = document.getElementById('expenseChart');
+    if (expenseCtx) {
+        new Chart(expenseCtx, {
+            type: 'doughnut',
+            data: {
+                labels: {{ expense_labels|safe }},
+                datasets: [{
+                    data: {{ expense_data|safe }},
+                    backgroundColor: [
+                        'rgba(91, 33, 182, 0.9)',
+                        'rgba(139, 92, 246, 0.7)',
+                        'rgba(16, 185, 129, 0.9)',
+                        'rgba(245, 158, 11, 0.9)',
+                        'rgba(239, 68, 68, 0.9)',
+                    ],
+                    borderColor: 'var(--card-bg-color)',
+                    borderWidth: 3,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: 'var(--text-color)',
+                            font: { size: 12, weight: '500' },
+                            padding: 15,
+                            usePointStyle: true,
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Trend Chart
+    const trendCtx = document.getElementById('trendChart');
+    if (trendCtx) {
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [
+                    {
+                        label: 'Income',
+                        data: [65000, 68000, 72000, 71000, 75000, 78000],
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        borderWidth: 2,
+                    },
+                    {
+                        label: 'Expenses',
+                        data: [35000, 38000, 32000, 40000, 39000, 37000],
+                        borderColor: 'rgba(239, 68, 68, 1)',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        borderWidth: 2,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: 'var(--text-color)',
+                            font: { size: 12, weight: '500' },
+                            usePointStyle: true,
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        grid: { color: 'var(--border)' },
+                        ticks: { color: 'var(--text-secondary-color)' },
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: 'var(--text-secondary-color)' },
+                    }
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}

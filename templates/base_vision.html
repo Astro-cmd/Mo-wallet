@@ -1,0 +1,253 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Mo Wallet{% endblock %}</title>
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/vision-ui.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <!-- Logo -->
+        <a href="{% url 'core:home' %}" class="sidebar-header">
+            <div class="sidebar-logo">M</div>
+            <span class="sidebar-title">Mo Wallet</span>
+        </a>
+
+        <!-- Main Navigation -->
+        <nav>
+            <ul class="sidebar-menu">
+                {% if user.is_authenticated %}
+                    <li class="sidebar-item">
+                        <a href="{% url 'core:dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                            <i class="sidebar-icon fas fa-chart-line"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    
+                    <li class="sidebar-item">
+                        <a href="{% url 'wallet:wallet' %}" class="sidebar-link {% if request.resolver_match.url_name == 'wallet' %}active{% endif %}">
+                            <i class="sidebar-icon fas fa-wallet"></i>
+                            <span>Wallet</span>
+                        </a>
+                    </li>
+                    
+                    <li class="sidebar-item">
+                        <a href="{% url 'transactions:transactions' %}" class="sidebar-link {% if request.resolver_match.url_name == 'transactions' %}active{% endif %}">
+                            <i class="sidebar-icon fas fa-exchange-alt"></i>
+                            <span>Transactions</span>
+                        </a>
+                    </li>
+                    
+                    <li class="sidebar-item">
+                        <a href="{% url 'budget:budgets' %}" class="sidebar-link {% if 'budget' in request.resolver_match.app_name %}active{% endif %}">
+                            <i class="sidebar-icon fas fa-chart-pie"></i>
+                            <span>Budgets</span>
+                        </a>
+                    </li>
+                    
+                    <li class="sidebar-item">
+                        <a href="{% url 'goals:goals' %}" class="sidebar-link {% if 'goals' in request.resolver_match.app_name %}active{% endif %}">
+                            <i class="sidebar-icon fas fa-bullseye"></i>
+                            <span>Goals</span>
+                        </a>
+                    </li>
+                    
+                    <li class="sidebar-item">
+                        <a href="{% url 'analytics:analytics' %}" class="sidebar-link {% if 'analytics' in request.resolver_match.app_name %}active{% endif %}">
+                            <i class="sidebar-icon fas fa-chart-bar"></i>
+                            <span>Analytics</span>
+                        </a>
+                    </li>
+                    
+                    <li class="sidebar-item">
+                        <a href="{% url 'notifications:notifications' %}" class="sidebar-link {% if 'notifications' in request.resolver_match.app_name %}active{% endif %}">
+                            <i class="sidebar-icon fas fa-bell"></i>
+                            <span>Notifications</span>
+                        </a>
+                    </li>
+
+                    <li style="margin: var(--space-lg) 0; border-bottom: 1px solid var(--border);"></li>
+
+                    <li class="sidebar-item">
+                        <a href="{% url 'users:profile' %}" class="sidebar-link {% if 'profile' in request.resolver_match.url_name %}active{% endif %}">
+                            <i class="sidebar-icon fas fa-user-circle"></i>
+                            <span>Profile</span>
+                        </a>
+                    </li>
+                    
+                    <li class="sidebar-item">
+                        <a href="{% url 'users:logout' %}" class="sidebar-link">
+                            <i class="sidebar-icon fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li style="padding: var(--space-xl);">
+                        <p class="text-small">Sign in to access your dashboard</p>
+                        <a href="{% url 'users:login' %}" class="btn btn-primary btn-sm mt-lg" style="width: 100%; justify-content: center;">
+                            Sign In
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Top Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <!-- Logo (Mobile) -->
+            <a href="{% url 'core:home' %}" class="navbar-brand">
+                <i class="fas fa-wallet"></i>
+                <span>Mo Wallet</span>
+            </a>
+
+            <!-- Navbar Items -->
+            <ul class="navbar-menu">
+                {% if user.is_authenticated %}
+                    <li class="navbar-item">
+                        <span style="color: var(--text-secondary-color); font-size: 0.875rem;">
+                            Welcome, <strong>{{ user.first_name|default:user.username }}</strong>
+                        </span>
+                    </li>
+
+                    <li class="navbar-item">
+                        <button id="theme-toggle" class="btn btn-ghost" title="Toggle theme">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                    </li>
+
+                    <li class="navbar-item">
+                        <a href="{% url 'notifications:notifications' %}" style="position: relative;">
+                            <i class="fas fa-bell"></i>
+                            {% if unread_notifications %}
+                            <span style="
+                                position: absolute;
+                                top: -8px;
+                                right: -8px;
+                                width: 20px;
+                                height: 20px;
+                                background: var(--danger);
+                                border-radius: 50%;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                font-size: 0.625rem;
+                                color: white;
+                                font-weight: 700;
+                            ">{{ unread_notifications|slice:":2" }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+
+                    <li class="navbar-item">
+                        <a href="{% url 'users:profile' %}" style="display: flex; align-items: center; gap: var(--space-sm);">
+                            <i class="fas fa-user-circle"></i>
+                            <span style="display: none; max-width: 100px; overflow: hidden; text-overflow: ellipsis;">
+                                {{ user.first_name|default:user.username }}
+                            </span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="navbar-item">
+                        <a href="{% url 'core:features' %}">Features</a>
+                    </li>
+                    <li class="navbar-item">
+                        <a href="{% url 'users:login' %}" class="btn btn-primary btn-sm">Sign In</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    {% block content %}
+    <!-- Content goes here -->
+    {% endblock %}
+
+    <!-- Footer -->
+    {% if user.is_authenticated %}
+    <div style="
+        margin-left: 260px;
+        padding: var(--space-xl);
+        border-top: 1px solid var(--border);
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.75rem;
+    ">
+        <p style="margin: 0;">
+            &copy; 2025 Mo Wallet | Built with <i class="fas fa-heart" style="color: var(--danger);"></i> by PurpleStack
+        </p>
+    </div>
+    {% endif %}
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        
+        // Load theme preference
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        html.setAttribute('data-theme', currentTheme);
+        
+        if (themeToggle) {
+            // Update icon based on theme
+            function updateThemeIcon() {
+                const theme = html.getAttribute('data-theme');
+                themeToggle.innerHTML = theme === 'dark' 
+                    ? '<i class="fas fa-sun"></i>' 
+                    : '<i class="fas fa-moon"></i>';
+            }
+            
+            updateThemeIcon();
+            
+            themeToggle.addEventListener('click', () => {
+                const theme = html.getAttribute('data-theme');
+                const newTheme = theme === 'dark' ? 'light' : 'dark';
+                html.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeIcon();
+            });
+        }
+
+        // Mobile Sidebar Toggle
+        const sidebar = document.querySelector('.sidebar');
+        const mainContent = document.querySelector('.main-content');
+        
+        // Close sidebar on link click (mobile)
+        if (window.innerWidth <= 768) {
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    sidebar.classList.remove('active');
+                });
+            });
+        }
+
+        // Mobile Menu Toggle Button
+        const mobileMenuButtonHTML = `
+            <button id="mobile-menu-toggle" class="btn btn-ghost" style="display: none;">
+                <i class="fas fa-bars"></i>
+            </button>
+        `;
+        
+        // Check if mobile menu button already exists
+        if (!document.getElementById('mobile-menu-toggle')) {
+            // This would need to be added to navbar dynamically or in template
+        }
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
