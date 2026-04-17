@@ -297,7 +297,6 @@ Mo-wallet/
 |------|------|--------|
 | Astro (Moses M.) | Full Stack Developer | [@Astro-cmd](https://github.com/Astro-cmd) |
 | Lucy Wambui | Full Stack Developer | [@wambuiw](https://github.com/wambuiw) |
-| Avin Katami | Full Stack Developer | - |
 
 ---
 
