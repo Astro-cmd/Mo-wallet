@@ -1,15 +1,20 @@
 /* Base Styles */
+/* Color Palette: SOURCE OF TRUTH - COLOR_PALLETE _MOWALLET.MD */
 :root {
-  --primary-color: #4361ee;
-  --primary-dark: #3a56d4;
-  --error-color: #e63946;
-  --success-color: #4cc9f0;
-  --text-color: #2b2d42;
-  --light-gray: #f8f9fa;
-  --medium-gray: #e9ecef;
-  --dark-gray: #adb5bd;
+  --primary-color: #4318FF;
+  --primary-dark: #3207D4;
+  --error-color: #E31A1A;
+  --success-color: #01B574;
+  --warning-color: #FFB547;
+  --info-color: #0075FF;
+  --text-color: #344767;
+  --light-gray: #E9ECEF;
+  --medium-gray: #E2E8F0;
+  --dark-gray: #718096;
   --border-radius: 8px;
   --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --neutral-200: #E2E8F0;
+  --neutral-700: #2D3748;
 }
 
 * {
@@ -20,7 +25,7 @@
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f5f7fa;
+  background-color: #EDF2F7;
   color: var(--text-color);
   line-height: 1.6;
   padding: 20px;
@@ -126,13 +131,13 @@ button[type="submit"]:hover {
 }
 
 .messages .success {
-  background-color: #d4edda;
-  color: #155724;
+  background-color: rgba(1, 181, 116, 0.15);
+  color: #01B574;
 }
 
 .messages .error {
-  background-color: #f8d7da;
-  color: #721c24;
+  background-color: rgba(227, 26, 26, 0.15);
+  color: #E31A1A;
 }
 
 /* Login Link Styles */

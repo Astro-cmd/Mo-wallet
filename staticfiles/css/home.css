@@ -1,10 +1,10 @@
 :root {
-    --primary: #4F46E5;
-    --primary-dark: #3730A3;
-    --secondary: #10B981;
-    --dark: #1F2937;
-    --light: #F9FAFB;
-    --gray: #6B7280;
+    --primary: #4318FF;
+    --primary-dark: #3207D4;
+    --secondary: #01B574;
+    --dark: #0F1535;
+    --light: #E9ECEF;
+    --gray: #718096;
 }
 
 * {
@@ -15,7 +15,7 @@
 
 body {
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #1F2937 0%, #111827 100%);
+    background: linear-gradient(135deg, #0F1535 0%, #171E3E 100%);
     color: var(--light);
     overflow-x: hidden;
 }
@@ -30,7 +30,7 @@ header {
     width: 100%;
     top: 0;
     z-index: 1000;
-    background: rgba(31, 41, 55, 0.8);
+    background: rgba(15, 21, 53, 0.8);
     backdrop-filter: blur(10px);
     animation: fadeInDown 0.8s ease-out;
 }
@@ -55,7 +55,7 @@ header {
 .btn-primary:hover {
     background: var(--primary-dark);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    box-shadow: 0 4px 12px rgba(67, 24, 255, 0.3);
 }
 
 .btn-outline {
@@ -132,7 +132,7 @@ header {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    border: 2px solid var(--dark);
+    border: 2px solid #0F1535;
     margin-right: -10px;
 }
 

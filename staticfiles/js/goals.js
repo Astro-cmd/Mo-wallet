@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle contribution modal
     const addContributionButtons = document.querySelectorAll('.add-contribution');
     const contributionModal = document.getElementById('add-contribution-modal');
-    const contributionForm = document.querySelector('.contribution-form');
+    const contributionForm = document.getElementById('contribution-form');
     const amountInput = document.getElementById('amount');
     const walletBalance = parseFloat(document.querySelector('.wallet-balance')?.textContent.replace(/[^0-9.-]+/g, '') || '0');
 
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const goalId = this.dataset.id;
             const goalName = this.dataset.name;
             
-            document.getElementById('contribution-goal-id').value = goalId;
+            document.getElementById('goal-id').value = goalId;
             document.querySelector('#add-contribution-modal .modal-title').textContent = 
                 `Add Contribution to ${goalName}`;
             

@@ -1,6 +1,6 @@
 body {
     font-family: 'Segoe UI', sans-serif;
-    background: #f3f4f6;
+    background: #E9ECEF;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -42,7 +42,7 @@ body {
     width: 100%;
     padding: 10px;
     border: none;
-    background: #6d28d9;
+    background: #4318FF;
     color: white;
     border-radius: 8px;
     cursor: pointer;
@@ -50,7 +50,8 @@ body {
   }
   
   button:hover {
-    background: #5b21b6;
+    background: #3207D4;
+    opacity: 0.9;
   }
   
   .switch {
@@ -66,13 +67,13 @@ body {
   }
   
   .msg.success {
-    background: #d1fae5;
-    color: #065f46;
+    background: rgba(1, 181, 116, 0.15);
+    color: #01B574;
   }
   
   .msg.error {
-    background: #fee2e2;
-    color: #991b1b;
+    background: rgba(227, 26, 26, 0.15);
+    color: #E31A1A;
   }
   
   .input-group.remember {
