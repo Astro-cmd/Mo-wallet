@@ -1,385 +1,768 @@
-{% extends 'base.html' %}
+{% extends 'base_vision.html' %}
 {% load humanize %}
-{% load custom_filters %}
 
-{% block content %}
-<div class="container-fluid py-4">
-    <!-- Financial Summary Cards -->
-    <div class="row">
-        <!-- Income Card -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Monthly Income</div>
-                            <div class="h5 mb-0 font-weight-bold">KES {{ current_month_income|floatformat:2|intcomma }}</div>
-                            <div class="mt-2 small">
-                                {% if income_change > 0 %}
-                                <i class="fas fa-arrow-up text-success"></i>
-                                <span class="text-success">{{ income_change }}% from last month</span>
-                                {% else %}
-                                <i class="fas fa-arrow-down text-danger"></i>
-                                <span class="text-danger">{{ income_change|abs }}% from last month</span>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-money-bill-wave fa-2x text-success opacity-50"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Expenses Card -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-danger shadow h-100">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Monthly Expenses</div>
-                            <div class="h5 mb-0 font-weight-bold">KES {{ current_month_expenses|floatformat:2|intcomma }}</div>
-                            <div class="mt-2 small">
-                                {% if expense_change > 0 %}
-                                <i class="fas fa-arrow-up text-danger"></i>
-                                <span class="text-danger">{{ expense_change }}% from last month</span>
-                                {% else %}
-                                <i class="fas fa-arrow-down text-success"></i>
-                                <span class="text-success">{{ expense_change|abs }}% from last month</span>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-shopping-cart fa-2x text-danger opacity-50"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Net Savings Card -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-info shadow h-100">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Net Savings</div>
-                            <div class="h5 mb-0 font-weight-bold">KES {{ net_savings|floatformat:2|intcomma }}</div>
-                            <div class="mt-2 small">
-                                <i class="fas fa-piggy-bank text-info"></i>
-                                <span>Total accumulated savings</span>
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-piggy-bank fa-2x text-info opacity-50"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Savings Rate Card -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Savings Rate</div>
-                            <div class="h5 mb-0 font-weight-bold">{{ savings_rate }}%</div>
-                            <div class="progress progress-sm mt-2">
-                                <div class="progress-bar bg-warning" role="progressbar" style="width: {{ savings_rate }}%"></div>
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-percentage fa-2x text-warning opacity-50"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Charts Section -->
-    <div class="row">
-        <!-- Income vs Expenses Chart -->
-        <div class="col-xl-8 col-lg-7">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3 d-flex align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Income vs Expenses Trend</h6>
-                    <div class="dropdown no-arrow">
-                        <select class="form-select form-select-sm" id="trendPeriodSelect">
-                            <option value="monthly" selected>Monthly</option>
-                            <option value="quarterly">Quarterly</option>
-                            <option value="yearly">Yearly</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="chart-area">
-                        <canvas id="incomeExpenseChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Expense Categories Pie Chart -->
-        <div class="col-xl-4 col-lg-5">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Expense Distribution</h6>
-                </div>
-                <div class="card-body">
-                    <div class="chart-pie">
-                        <canvas id="expenseCategoriesChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Daily Spending & Goals Section -->
-    <div class="row">
-        <!-- Daily Spending Pattern -->
-        <div class="col-xl-8 col-lg-7">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Daily Spending Pattern (Last 30 Days)</h6>
-                </div>
-                <div class="card-body">
-                    <div class="chart-area">
-                        <canvas id="dailySpendingChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Goals Progress -->
-        <div class="col-xl-4 col-lg-5">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Savings Goals Progress</h6>
-                </div>
-                <div class="card-body">
-                    {% if savings_goals %}
-                    {% for goal in savings_goals %}
-                    <h4 class="small font-weight-bold">
-                        {{ goal.goal_name }} 
-                        <span class="float-end">{{ goal.progress|floatformat:1 }}%</span>
-                    </h4>
-                    <div class="progress mb-4">
-                        <div class="progress-bar" role="progressbar" style="width: {{ goal.progress }}%"
-                             aria-valuenow="{{ goal.progress }}" aria-valuemin="0" aria-valuemax="100">
-                        </div>
-                    </div>
-                    {% endfor %}
-                    {% else %}
-                    <div class="text-center py-4">
-                        <i class="fas fa-flag fa-3x text-gray-300 mb-2"></i>
-                        <p class="mb-0">No savings goals set</p>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Budget Progress -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Budget Utilization</h6>
-                </div>
-                <div class="card-body">
-                    {% if budget_progress %}
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Category</th>
-                                    <th>Limit</th>
-                                    <th>Spent</th>
-                                    <th>Progress</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for budget in budget_progress %}
-                                <tr>
-                                    <td>{{ budget.category }}</td>
-                                    <td>KES {{ budget.limit|floatformat:2|intcomma }}</td>
-                                    <td>KES {{ budget.amount_spent|floatformat:2|intcomma }}</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="progress flex-grow-1 me-2" style="height: 8px;">
-                                                <div class="progress-bar {% if budget.progress > 100 %}bg-danger{% elif budget.progress > 75 %}bg-warning{% else %}bg-success{% endif %}" 
-                                                     role="progressbar" style="width: {{ budget.progress }}%">
-                                                </div>
-                                            </div>
-                                            <span class="small">{{ budget.progress|floatformat:1 }}%</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    {% else %}
-                    <div class="text-center py-4">
-                        <i class="fas fa-chart-pie fa-3x text-gray-300 mb-2"></i>
-                        <p class="mb-0">No budgets created yet</p>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
+{% block title %}Analytics - Mo Wallet{% endblock %}
 
 {% block extra_css %}
 <style>
-.border-left-success { border-left: 4px solid #1cc88a; }
-.border-left-danger { border-left: 4px solid #e74a3b; }
-.border-left-info { border-left: 4px solid #36b9cc; }
-.border-left-warning { border-left: 4px solid #f6c23e; }
-.chart-area { position: relative; height: 20rem; width: 100%; }
-.chart-pie { position: relative; height: 15rem; width: 100%; }
-.card-header { background-color: #f8f9fc; border-bottom: 1px solid #e3e6f0; }
+    .analytics-page {
+        padding: var(--space-2xl) 0;
+    }
+
+    .analytics-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: var(--space-lg);
+        margin-bottom: var(--space-2xl);
+        padding-bottom: var(--space-xl);
+        border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+    }
+
+    .analytics-header h1 {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: var(--text-color);
+    }
+
+    .analytics-header p {
+        margin: var(--space-sm) 0 0 0;
+        color: var(--text-secondary-color);
+    }
+
+    .overview-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-lg);
+        margin-bottom: var(--space-lg);
+    }
+
+    .vision-card {
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.92) 0%, rgba(15, 21, 53, 0.74) 100%);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-radius: var(--radius-lg);
+        box-shadow: 0 10px 36px rgba(0, 0, 0, 0.3);
+    }
+
+    .metric-card {
+        padding: var(--space-xl);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .metric-card::after {
+        content: '';
+        position: absolute;
+        right: -35px;
+        top: -35px;
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        opacity: 0.16;
+    }
+
+    .metric-card.income::after { background: #01B574; }
+    .metric-card.expense::after { background: #E31A1A; }
+    .metric-card.savings::after { background: #0075FF; }
+    .metric-card.rate::after { background: #FFB547; }
+
+    .metric-label {
+        font-size: 0.74rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-secondary-color);
+        font-weight: 700;
+    }
+
+    .metric-value {
+        margin-top: var(--space-sm);
+        font-size: 1.7rem;
+        color: var(--text-color);
+        font-weight: 800;
+    }
+
+    .metric-meta {
+        margin-top: var(--space-sm);
+        font-size: 0.84rem;
+        color: var(--text-secondary-color);
+    }
+
+    .metric-meta.up { color: var(--success); }
+    .metric-meta.down { color: var(--danger); }
+
+    .insight-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-lg);
+        margin-bottom: var(--space-lg);
+    }
+
+    .insight-card {
+        padding: var(--space-lg);
+    }
+
+    .insight-title {
+        font-size: 0.74rem;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--text-secondary-color);
+        font-weight: 700;
+    }
+
+    .insight-value {
+        margin-top: var(--space-sm);
+        color: var(--text-color);
+        font-size: 1.25rem;
+        font-weight: 800;
+    }
+
+    .insight-sub {
+        margin-top: var(--space-sm);
+        color: var(--text-secondary-color);
+        font-size: 0.84rem;
+    }
+
+    .layout-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: var(--space-lg);
+        margin-bottom: var(--space-lg);
+    }
+
+    .layout-grid.secondary {
+        grid-template-columns: 1.6fr 1fr;
+    }
+
+    .section-head {
+        padding: var(--space-lg) var(--space-xl);
+        border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--space-md);
+    }
+
+    .section-head h3 {
+        margin: 0;
+        color: var(--text-color);
+        font-size: 1.1rem;
+    }
+
+    .section-head p {
+        margin: 2px 0 0 0;
+        color: var(--text-secondary-color);
+        font-size: 0.82rem;
+    }
+
+    .chart-body {
+        padding: var(--space-lg);
+    }
+
+    .chart-box {
+        position: relative;
+        height: 320px;
+        min-height: 320px;
+        max-height: 320px;
+    }
+
+    .chart-box.tall {
+        height: 360px;
+        min-height: 360px;
+        max-height: 360px;
+    }
+
+    .chart-box canvas {
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    .list-card-body {
+        padding: var(--space-lg);
+    }
+
+    .rank-list {
+        display: grid;
+        gap: var(--space-sm);
+    }
+
+    .rank-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--space-sm);
+        padding: var(--space-sm) var(--space-md);
+        border: 1px solid rgba(139, 92, 246, 0.16);
+        border-radius: var(--radius-md);
+        background: rgba(139, 92, 246, 0.06);
+    }
+
+    .rank-item .name {
+        color: var(--text-color);
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .rank-item .value {
+        color: var(--text-secondary-color);
+        font-size: 0.84rem;
+        white-space: nowrap;
+    }
+
+    .progress-list {
+        display: grid;
+        gap: var(--space-md);
+    }
+
+    .progress-item {
+        display: grid;
+        gap: var(--space-xs);
+    }
+
+    .progress-meta {
+        display: flex;
+        justify-content: space-between;
+        color: var(--text-secondary-color);
+        font-size: 0.82rem;
+    }
+
+    .progress-track {
+        width: 100%;
+        height: 8px;
+        background: rgba(148, 163, 184, 0.22);
+        border-radius: 999px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        border-radius: 999px;
+    }
+
+    .progress-fill.good { background: linear-gradient(90deg, #01B574 0%, #34D399 100%); }
+    .progress-fill.warn { background: linear-gradient(90deg, #FFB547 0%, #FFC858 100%); }
+    .progress-fill.danger { background: linear-gradient(90deg, #E31A1A 0%, #FF6B6B 100%); }
+
+    .table-wrap {
+        padding: var(--space-lg);
+        overflow-x: auto;
+    }
+
+    .analytics-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 var(--space-sm);
+        min-width: 760px;
+    }
+
+    .analytics-table th {
+        text-align: left;
+        color: var(--text-secondary-color);
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        padding: 0 var(--space-md) var(--space-sm) var(--space-md);
+    }
+
+    .analytics-table td {
+        padding: var(--space-md);
+        color: var(--text-color);
+        background: rgba(139, 92, 246, 0.06);
+        border-top: 1px solid rgba(139, 92, 246, 0.12);
+        border-bottom: 1px solid rgba(139, 92, 246, 0.12);
+    }
+
+    .analytics-table tr td:first-child {
+        border-left: 1px solid rgba(139, 92, 246, 0.12);
+        border-radius: var(--radius-md) 0 0 var(--radius-md);
+    }
+
+    .analytics-table tr td:last-child {
+        border-right: 1px solid rgba(139, 92, 246, 0.12);
+        border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    }
+
+    .empty-state {
+        padding: var(--space-2xl);
+        text-align: center;
+        color: var(--text-secondary-color);
+    }
+
+    @media (max-width: 1200px) {
+        .overview-grid { grid-template-columns: repeat(2, 1fr); }
+        .insight-grid { grid-template-columns: 1fr; }
+        .layout-grid,
+        .layout-grid.secondary { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+        .analytics-header h1 { font-size: 1.7rem; }
+        .overview-grid { grid-template-columns: 1fr; }
+        .chart-box,
+        .chart-box.tall {
+            height: 280px;
+            min-height: 280px;
+            max-height: 280px;
+        }
+    }
 </style>
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <div class="analytics-page">
+        <div class="analytics-header">
+            <div>
+                <h1><i class="fas fa-chart-line"></i> Analytics</h1>
+                <p>Deep financial insights across trends, categories, budgets, and goals</p>
+            </div>
+        </div>
+
+        <div class="overview-grid">
+            <div class="vision-card metric-card income">
+                <div class="metric-label">Monthly Income</div>
+                <div class="metric-value">KES {{ current_month_income|floatformat:2|intcomma }}</div>
+                <div class="metric-meta {% if income_change >= 0 %}up{% else %}down{% endif %}">
+                    <i class="fas fa-arrow-{% if income_change >= 0 %}up{% else %}down{% endif %}"></i>
+                    {{ income_change|floatformat:1 }}% vs last month
+                </div>
+            </div>
+
+            <div class="vision-card metric-card expense">
+                <div class="metric-label">Monthly Expenses</div>
+                <div class="metric-value">KES {{ current_month_expenses|floatformat:2|intcomma }}</div>
+                <div class="metric-meta {% if expense_change <= 0 %}up{% else %}down{% endif %}">
+                    <i class="fas fa-arrow-{% if expense_change <= 0 %}down{% else %}up{% endif %}"></i>
+                    {{ expense_change|floatformat:1 }}% vs last month
+                </div>
+            </div>
+
+            <div class="vision-card metric-card savings">
+                <div class="metric-label">Total Net Savings</div>
+                <div class="metric-value">KES {{ net_savings|floatformat:2|intcomma }}</div>
+                <div class="metric-meta">All-time accumulation</div>
+            </div>
+
+            <div class="vision-card metric-card rate">
+                <div class="metric-label">Savings Rate</div>
+                <div class="metric-value">{{ savings_rate|floatformat:1 }}%</div>
+                <div class="progress-track" style="margin-top: var(--space-sm);">
+                    <div class="progress-fill warn" style="width: {% if savings_rate > 100 %}100{% elif savings_rate < 0 %}0{% else %}{{ savings_rate }}{% endif %}%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="insight-grid">
+            <div class="vision-card insight-card">
+                <div class="insight-title">Top Expense Category</div>
+                <div class="insight-value">{{ top_expense_category_name|title }}</div>
+                <div class="insight-sub">KES {{ top_expense_category_total|floatformat:2|intcomma }} spent</div>
+            </div>
+            <div class="vision-card insight-card">
+                <div class="insight-title">Average Daily Spend</div>
+                <div class="insight-value">KES {{ avg_daily_spend|floatformat:2|intcomma }}</div>
+                <div class="insight-sub">Based on last 30 days of expense activity</div>
+            </div>
+            <div class="vision-card insight-card">
+                <div class="insight-title">Goal Momentum</div>
+                <div class="insight-value">{{ goal_avg_progress|floatformat:1 }}%</div>
+                <div class="insight-sub">{{ goals_completed_count }} completed • {{ goals_urgent_count }} urgent</div>
+            </div>
+        </div>
+
+        <div class="layout-grid">
+            <section class="vision-card">
+                <div class="section-head">
+                    <div>
+                        <h3>Income vs Expense Trend</h3>
+                        <p>Last 12 months overview</p>
+                    </div>
+                </div>
+                <div class="chart-body">
+                    <div class="chart-box tall">
+                        <canvas id="incomeExpenseChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section class="vision-card">
+                <div class="section-head">
+                    <div>
+                        <h3>Expense Distribution</h3>
+                        <p>Category weight</p>
+                    </div>
+                </div>
+                <div class="chart-body">
+                    <div class="chart-box">
+                        <canvas id="expenseCategoriesChart"></canvas>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="layout-grid secondary">
+            <section class="vision-card">
+                <div class="section-head">
+                    <div>
+                        <h3>Daily Spending Pattern</h3>
+                        <p>Last 30 days</p>
+                    </div>
+                </div>
+                <div class="chart-body">
+                    <div class="chart-box">
+                        <canvas id="dailySpendingChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section class="vision-card">
+                <div class="section-head">
+                    <div>
+                        <h3>Top Expense Categories</h3>
+                        <p>Highest total spend</p>
+                    </div>
+                </div>
+                <div class="list-card-body">
+                    {% if expense_categories %}
+                    <div class="rank-list">
+                        {% for cat in expense_categories|slice:":5" %}
+                        <div class="rank-item">
+                            <span class="name">{{ cat.category|title }}</span>
+                            <span class="value">KES {{ cat.total|floatformat:2|intcomma }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state">No expenses captured yet.</div>
+                    {% endif %}
+                </div>
+            </section>
+        </div>
+
+        <div class="layout-grid">
+            <section class="vision-card">
+                <div class="section-head">
+                    <div>
+                        <h3>Budget Health</h3>
+                        <p>Current utilization bands</p>
+                    </div>
+                </div>
+                <div class="list-card-body">
+                    <div class="progress-list" style="margin-bottom: var(--space-lg);">
+                        <div class="progress-item">
+                            <div class="progress-meta"><span>On Track</span><span>{{ budget_safe_count }}</span></div>
+                            <div class="progress-track"><div class="progress-fill good" style="width: {% if budget_progress|length > 0 %}{% widthratio budget_safe_count budget_progress|length 100 %}{% else %}0{% endif %}%;"></div></div>
+                        </div>
+                        <div class="progress-item">
+                            <div class="progress-meta"><span>Warning</span><span>{{ budget_warning_count }}</span></div>
+                            <div class="progress-track"><div class="progress-fill warn" style="width: {% if budget_progress|length > 0 %}{% widthratio budget_warning_count budget_progress|length 100 %}{% else %}0{% endif %}%;"></div></div>
+                        </div>
+                        <div class="progress-item">
+                            <div class="progress-meta"><span>Critical</span><span>{{ budget_critical_count }}</span></div>
+                            <div class="progress-track"><div class="progress-fill danger" style="width: {% if budget_progress|length > 0 %}{% widthratio budget_critical_count budget_progress|length 100 %}{% else %}0{% endif %}%;"></div></div>
+                        </div>
+                    </div>
+
+                    {% if budget_progress %}
+                    <div class="rank-list">
+                        {% for budget in budget_progress|slice:":5" %}
+                        <div class="rank-item">
+                            <span class="name">{{ budget.get_category_display }}</span>
+                            <span class="value">{{ budget.percentage_used_display|floatformat:1 }}%</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state">No budgets available.</div>
+                    {% endif %}
+                </div>
+            </section>
+
+            <section class="vision-card">
+                <div class="section-head">
+                    <div>
+                        <h3>Savings Goals Progress</h3>
+                        <p>Live progress bars</p>
+                    </div>
+                </div>
+                <div class="list-card-body">
+                    {% if savings_goals %}
+                    <div class="progress-list">
+                        {% for goal in savings_goals|slice:":6" %}
+                        <div class="progress-item">
+                            <div class="progress-meta">
+                                <span>{{ goal.goal_name }}</span>
+                                <span>{{ goal.progress|floatformat:1 }}%</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill {% if goal.progress > 90 %}danger{% elif goal.progress > 70 %}warn{% else %}good{% endif %}"
+                                     style="width: {% if goal.progress > 100 %}100{% elif goal.progress < 0 %}0{% else %}{{ goal.progress|floatformat:0 }}{% endif %}%;"></div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state">No savings goals set.</div>
+                    {% endif %}
+                </div>
+            </section>
+        </div>
+
+        <section class="vision-card">
+            <div class="section-head">
+                <div>
+                    <h3>Budget Utilization Table</h3>
+                    <p>Category-level limits vs spend</p>
+                </div>
+            </div>
+            <div class="table-wrap">
+                {% if budget_progress %}
+                <table class="analytics-table">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Limit</th>
+                            <th>Spent</th>
+                            <th>Progress</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for budget in budget_progress %}
+                        <tr>
+                            <td>{{ budget.get_category_display }}</td>
+                            <td>KES {{ budget.limit|floatformat:2|intcomma }}</td>
+                            <td>KES {{ budget.amount_spent|floatformat:2|intcomma }}</td>
+                            <td>
+                                <div class="progress-meta" style="margin-bottom: 4px;">
+                                    <span>{{ budget.percentage_used_display|floatformat:1 }}%</span>
+                                </div>
+                                <div class="progress-track">
+                                    <div class="progress-fill {% if budget.percentage_used_display > 90 %}danger{% elif budget.percentage_used_display > 75 %}warn{% else %}good{% endif %}"
+                                         style="width: {{ budget.percentage_used_display|floatformat:0 }}%;"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="empty-state">No budgets created yet.</div>
+                {% endif %}
+            </div>
+        </section>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-const colors = {
-    primary: '#4e73df',
-    success: '#1cc88a',
-    danger: '#e74a3b',
-    warning: '#f6c23e',
-    info: '#36b9cc'
-};
+    const rootStyles = getComputedStyle(document.documentElement);
+    const textColor = rootStyles.getPropertyValue('--text-color').trim() || '#E2E8F0';
+    const textSecondary = rootStyles.getPropertyValue('--text-secondary-color').trim() || '#94A3B8';
+    const gridColor = rootStyles.getPropertyValue('--border').trim() || 'rgba(148, 163, 184, 0.2)';
 
-Chart.defaults.color = '#858796';
-Chart.defaults.font.family = 'Nunito';
+    const monthsLabels = {{ months_labels_json|safe }};
+    const incomeData = {{ income_data_json|safe }};
+    const expenseData = {{ expense_data_json|safe }};
+    const dailyLabels = {{ daily_labels_json|safe }};
+    const dailyData = {{ daily_data_json|safe }};
+    const expenseCategoryLabels = {{ expense_category_labels_json|safe }};
+    const expenseCategoryData = {{ expense_category_data_json|safe }};
 
-// Income vs Expenses Chart
-const incomeExpenseCtx = document.getElementById('incomeExpenseChart').getContext('2d');
-new Chart(incomeExpenseCtx, {
-    type: 'line',
-    data: {
-        labels: {{ months_labels|safe }},
-        datasets: [{
-            label: 'Income',
-            data: {{ income_data|safe }},
-            borderColor: colors.success,
-            backgroundColor: 'rgba(28, 200, 138, 0.1)',
-            tension: 0.3,
-            fill: true
-        }, {
-            label: 'Expenses',
-            data: {{ expense_data|safe }},
-            borderColor: colors.danger,
-            backgroundColor: 'rgba(231, 74, 59, 0.1)',
-            tension: 0.3,
-            fill: true
-        }]
-    },
-    options: {
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                display: true,
-                position: 'top'
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                ticks: {
-                    callback: value => 'KES ' + value.toLocaleString()
-                }
-            }
+    function destroyIfExists(canvas) {
+        const existing = Chart.getChart(canvas);
+        if (existing) {
+            existing.destroy();
         }
     }
-});
 
-// Expense Categories Chart
-const categoryData = {{ expense_categories|safe }};
-const categoryCtx = document.getElementById('expenseCategoriesChart').getContext('2d');
-new Chart(categoryCtx, {
-    type: 'doughnut',
-    data: {
-        labels: categoryData.map(cat => cat.category),
-        datasets: [{
-            data: categoryData.map(cat => cat.total),
-            backgroundColor: [
-                colors.primary,
-                colors.success,
-                colors.info,
-                colors.warning,
-                colors.danger,
-                '#858796',
-                '#f8f9fc'
-            ]
-        }]
-    },
-    options: {
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'right'
+    const incomeExpenseCtx = document.getElementById('incomeExpenseChart');
+    if (incomeExpenseCtx) {
+        destroyIfExists(incomeExpenseCtx);
+        new Chart(incomeExpenseCtx, {
+            type: 'line',
+            data: {
+                labels: monthsLabels,
+                datasets: [
+                    {
+                        label: 'Income',
+                        data: incomeData,
+                        borderColor: 'rgba(1, 181, 116, 1)',
+                        backgroundColor: 'rgba(1, 181, 116, 0.12)',
+                        pointBackgroundColor: 'rgba(1, 181, 116, 1)',
+                        pointRadius: 3,
+                        borderWidth: 3,
+                        tension: 0.35,
+                        fill: true,
+                    },
+                    {
+                        label: 'Expenses',
+                        data: expenseData,
+                        borderColor: 'rgba(227, 26, 26, 1)',
+                        backgroundColor: 'rgba(227, 26, 26, 0.1)',
+                        pointBackgroundColor: 'rgba(227, 26, 26, 1)',
+                        pointRadius: 3,
+                        borderWidth: 3,
+                        tension: 0.35,
+                        fill: true,
+                    }
+                ]
             },
-            tooltip: {
-                callbacks: {
-                    label: function(context) {
-                        const value = context.raw;
-                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                        const percentage = ((value / total) * 100).toFixed(1);
-                        return `KES ${value.toLocaleString()} (${percentage}%)`;
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                resizeDelay: 120,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: textColor,
+                            usePointStyle: true,
+                            font: { size: 12, weight: '600' }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(ctx) {
+                                return `${ctx.dataset.label}: KES ${Number(ctx.raw || 0).toLocaleString()}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: textSecondary },
+                        grid: { display: false }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: textSecondary,
+                            callback: function(v) {
+                                return 'KES ' + Number(v).toLocaleString();
+                            }
+                        },
+                        grid: { color: gridColor }
                     }
                 }
             }
-        },
-        cutout: '70%'
+        });
     }
-});
 
-// Daily Spending Chart
-const dailyCtx = document.getElementById('dailySpendingChart').getContext('2d');
-new Chart(dailyCtx, {
-    type: 'bar',
-    data: {
-        labels: {{ daily_labels|safe }},
-        datasets: [{
-            label: 'Daily Expenses',
-            data: {{ daily_data|safe }},
-            backgroundColor: colors.info,
-            borderRadius: 4
-        }]
-    },
-    options: {
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                display: false
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                ticks: {
-                    callback: value => 'KES ' + value.toLocaleString()
+    const expenseCategoryCtx = document.getElementById('expenseCategoriesChart');
+    if (expenseCategoryCtx) {
+        destroyIfExists(expenseCategoryCtx);
+        const hasExpenseData = Array.isArray(expenseCategoryData) && expenseCategoryData.some(v => Number(v) > 0);
+        new Chart(expenseCategoryCtx, {
+            type: 'doughnut',
+            data: hasExpenseData ? {
+                labels: expenseCategoryLabels,
+                datasets: [{
+                    data: expenseCategoryData,
+                    backgroundColor: [
+                        'rgba(67, 24, 255, 0.95)',
+                        'rgba(0, 117, 255, 0.9)',
+                        'rgba(1, 181, 116, 0.9)',
+                        'rgba(255, 181, 71, 0.9)',
+                        'rgba(227, 26, 26, 0.9)',
+                        'rgba(148, 163, 184, 0.85)'
+                    ],
+                    borderColor: 'rgba(15, 23, 42, 0.92)',
+                    borderWidth: 2,
+                    hoverOffset: 8,
+                }]
+            } : {
+                labels: ['No expense data'],
+                datasets: [{
+                    data: [1],
+                    backgroundColor: ['rgba(148, 163, 184, 0.35)'],
+                    borderColor: ['rgba(15, 23, 42, 0.92)'],
+                    borderWidth: 2,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                resizeDelay: 120,
+                cutout: '66%',
+                plugins: {
+                    legend: {
+                        display: hasExpenseData,
+                        position: 'bottom',
+                        labels: {
+                            color: textColor,
+                            font: { size: 11, weight: '600' },
+                            usePointStyle: true,
+                            padding: 12,
+                        }
+                    },
+                    tooltip: {
+                        enabled: hasExpenseData,
+                        callbacks: {
+                            label: function(ctx) {
+                                const value = Number(ctx.raw || 0);
+                                return `${ctx.label}: KES ${value.toLocaleString()}`;
+                            }
+                        }
+                    }
                 }
             }
-        }
+        });
     }
-});
 
-// Handle period changes
-document.getElementById('trendPeriodSelect').addEventListener('change', function(e) {
-    // This would be implemented to fetch new data based on the selected period
-    console.log('Period changed to:', e.target.value);
-});
+    const dailyCtx = document.getElementById('dailySpendingChart');
+    if (dailyCtx) {
+        destroyIfExists(dailyCtx);
+        new Chart(dailyCtx, {
+            type: 'bar',
+            data: {
+                labels: dailyLabels,
+                datasets: [{
+                    label: 'Daily Expenses',
+                    data: dailyData,
+                    backgroundColor: 'rgba(0, 117, 255, 0.8)',
+                    borderRadius: 6,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                resizeDelay: 120,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(ctx) {
+                                return `KES ${Number(ctx.raw || 0).toLocaleString()}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: textSecondary, maxRotation: 0, autoSkip: true, maxTicksLimit: 8 },
+                        grid: { display: false }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: textSecondary,
+                            callback: function(v) {
+                                return 'KES ' + Number(v).toLocaleString();
+                            }
+                        },
+                        grid: { color: gridColor }
+                    }
+                }
+            }
+        });
+    }
 </script>
 {% endblock %}

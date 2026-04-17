@@ -1,0 +1,366 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Login - Mo Wallet</title>
+    <meta name="description" content="Sign in to Mo Wallet to manage your budget, review wallet activity, and track savings goals.">
+    <meta name="robots" content="noindex,nofollow">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+    <meta name="theme-color" content="#03091f">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/vision-ui.css' %}" />
+    <style>
+        html, body {
+            margin: 0;
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #03091f;
+            color: #fff;
+        }
+
+        .auth-shell {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr;
+            position: relative;
+        }
+
+        .top-nav {
+            position: fixed;
+            top: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(860px, calc(100% - 32px));
+            z-index: 20;
+            background: rgba(15, 21, 53, 0.65);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            backdrop-filter: blur(12px);
+            border-radius: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+        }
+
+        .brand {
+            letter-spacing: 0.18em;
+            font-weight: 700;
+            font-size: 0.88rem;
+            color: #dbe3ff;
+            text-transform: uppercase;
+            text-decoration: none;
+        }
+
+        .top-links {
+            display: flex;
+            gap: 22px;
+            align-items: center;
+        }
+
+        .top-links a {
+            color: #d4d8ea;
+            text-decoration: none;
+            font-size: 0.86rem;
+            font-weight: 600;
+        }
+
+        .buy-btn {
+            border: 0;
+            color: #fff;
+            background: linear-gradient(135deg, #0075FF 0%, #4da3ff 100%);
+            font-size: 0.78rem;
+            font-weight: 700;
+            border-radius: 12px;
+            padding: 11px 18px;
+        }
+
+        .auth-left {
+            display: none;
+            position: relative;
+            background: linear-gradient(120deg, rgba(3, 8, 28, 0.72), rgba(9, 14, 44, 0.3)),
+                url("{% static 'images/login page.jpg' %}") center center / cover no-repeat;
+            overflow: hidden;
+        }
+
+        .auth-left::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 70% 10%, rgba(138, 92, 246, 0.45), transparent 38%);
+        }
+
+        .left-copy {
+            position: absolute;
+            left: 9%;
+            right: 9%;
+            bottom: 14%;
+            z-index: 2;
+        }
+
+        .left-copy .eyebrow {
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: rgba(240, 244, 255, 0.9);
+            margin-bottom: 14px;
+            font-size: 0.9rem;
+        }
+
+        .left-copy h1 {
+            margin: 0;
+            font-size: clamp(2.2rem, 4vw, 3.3rem);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #fff;
+        }
+
+        .auth-right {
+            background: linear-gradient(145deg, #050d31 0%, #060f3f 40%, #040a2a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 94px 20px 40px;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 430px;
+            padding: 22px 8px;
+        }
+
+        .form-header h2 {
+            margin: 0;
+            font-size: 2.7rem;
+            color: #F8FAFC;
+            font-weight: 800;
+        }
+
+        .form-header p {
+            margin-top: 8px;
+            margin-bottom: 28px;
+            color: #A7B0CC;
+            font-size: 1.02rem;
+        }
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #D9E1FF;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .field input {
+            width: 100%;
+            background: rgba(15, 25, 61, 0.88);
+            border: 2px solid rgba(129, 143, 186, 0.3);
+            border-radius: 15px;
+            color: #F8FAFC;
+            padding: 14px 16px;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            transition: all 180ms ease;
+        }
+
+        .field input:focus {
+            outline: none;
+            border-color: #3BA3FF;
+            box-shadow: 0 0 0 3px rgba(0, 117, 255, 0.2);
+        }
+
+        .field input::placeholder {
+            color: #7383b7;
+        }
+
+        .utility-row {
+            margin-top: 4px;
+            margin-bottom: 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: #c3ccec;
+        }
+
+        .remember input {
+            width: 17px;
+            height: 17px;
+            accent-color: #1f8dff;
+        }
+
+        .forgot {
+            color: #6C8CFF;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .submit-btn {
+            width: 100%;
+            border: none;
+            border-radius: 14px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 14px;
+            background: linear-gradient(135deg, #0075FF 0%, #3A8DFF 100%);
+            box-shadow: 0 10px 30px rgba(0, 117, 255, 0.35);
+            cursor: pointer;
+        }
+
+        .message {
+            margin-bottom: 16px;
+            border-radius: 12px;
+            padding: 11px 13px;
+            font-size: 0.88rem;
+            border: 1px solid rgba(139, 92, 246, 0.35);
+            background: rgba(84, 64, 176, 0.22);
+            color: #dbe1ff;
+        }
+
+        .switch {
+            margin-top: 16px;
+            text-align: center;
+            color: #aab6de;
+            font-size: 0.95rem;
+        }
+
+        .switch a {
+            color: #7ca8ff;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        @media (min-width: 1100px) {
+            .auth-shell {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .auth-left {
+                display: block;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .top-links {
+                gap: 12px;
+            }
+
+            .top-links a {
+                font-size: 0.75rem;
+            }
+
+            .buy-btn {
+                display: none;
+            }
+
+            .form-header h2 {
+                font-size: 2.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-shell">
+        <nav class="top-nav">
+            <a class="brand" href="{% url 'core:home' %}">Mo Wallet</a>
+            <div class="top-links">
+                <a href="{% url 'core:dashboard' %}"><i class="fas fa-house"></i> Dashboard</a>
+                <a href="{% url 'users:profile' %}"><i class="fas fa-user"></i> Profile</a>
+                <a href="{% url 'users:signup' %}"><i class="fas fa-user-plus"></i> Sign Up</a>
+                <a href="{% url 'users:login' %}"><i class="fas fa-key"></i> Sign In</a>
+            </div>
+        </nav>
+
+        <aside class="auth-left">
+            <div class="left-copy">
+                <div class="eyebrow">Mo Wallet Financial Command Center:</div>
+                <h1>The Mo Wallet Dashboard</h1>
+            </div>
+        </aside>
+
+        <div class="auth-right">
+            <div class="auth-card">
+                <div class="form-header">
+                    <h2>Nice to see you!</h2>
+                    <p>Enter your email and password to sign in</p>
+                </div>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="message">
+                            <i class="fas fa-circle-info"></i> {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="POST" action="{% url 'users:login' %}">
+                    {% csrf_token %}
+
+                    <div class="field">
+                        <label for="username">Email</label>
+                        <input 
+                            type="text" 
+                            name="username" 
+                            id="username" 
+                            placeholder="Your email..."
+                            required 
+                        />
+                    </div>
+
+                    <div class="field">
+                        <label for="password">Password</label>
+                        <input 
+                            type="password" 
+                            name="password" 
+                            id="password" 
+                            placeholder="Your password..."
+                            required 
+                        />
+                    </div>
+
+                    <div class="utility-row">
+                        <label class="remember">
+                            <input type="checkbox" name="remember" />
+                            Remember me
+                        </label>
+                        <a href="{% url 'users:password_reset' %}" class="forgot">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-right-to-bracket"></i> Sign In
+                    </button>
+                </form>
+
+                <p class="switch">
+                    Don't have an account? 
+                    <a href="{% url 'users:signup' %}">Create one now</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

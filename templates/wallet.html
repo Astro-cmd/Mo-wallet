@@ -1,187 +1,494 @@
-{% extends 'base.html' %}
+{% extends 'base_vision.html' %}
+{% load humanize %}
+
+{% block title %}Wallets - Mo Wallet{% endblock %}
+
+{% block extra_css %}
+<style>
+    .wallet-page {
+        padding: var(--space-2xl) 0;
+    }
+
+    .wallet-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: var(--space-lg);
+        margin-bottom: var(--space-2xl);
+        padding-bottom: var(--space-xl);
+        border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+    }
+
+    .wallet-header h1 {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        font-size: 2.25rem;
+        font-weight: 800;
+        color: var(--text-color);
+    }
+
+    .wallet-header p {
+        margin: var(--space-sm) 0 0 0;
+        color: var(--text-secondary-color);
+    }
+
+    .wallet-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: var(--space-xl);
+        margin-bottom: var(--space-xl);
+    }
+
+    .wallet-hero {
+        min-height: 230px;
+        border-radius: var(--radius-lg);
+        padding: var(--space-xl);
+        background: radial-gradient(circle at top left, rgba(80, 70, 229, 0.95), rgba(15, 23, 92, 0.96) 55%, rgba(8, 13, 45, 0.98));
+        border: 1px solid rgba(139, 92, 246, 0.25);
+        box-shadow: 0 20px 60px rgba(67, 24, 255, 0.35);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .wallet-hero::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 75% 20%, rgba(255, 255, 255, 0.18), transparent 40%);
+        pointer-events: none;
+    }
+
+    .wallet-hero-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+    }
+
+    .wallet-hero-brand {
+        font-size: 1.4rem;
+        font-weight: 800;
+    }
+
+    .wallet-hero-chip {
+        width: 46px;
+        height: 32px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.35));
+    }
+
+    .wallet-balance-label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        opacity: 0.85;
+        margin-bottom: var(--space-sm);
+        position: relative;
+        z-index: 1;
+    }
+
+    .wallet-balance-value {
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 800;
+        line-height: 1;
+        position: relative;
+        z-index: 1;
+    }
+
+    .wallet-hero-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+    }
+
+    .wallet-hero-meta {
+        color: rgba(255, 255, 255, 0.88);
+        font-size: 0.85rem;
+    }
+
+    .vision-card {
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.92) 0%, rgba(15, 21, 53, 0.74) 100%);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-radius: var(--radius-lg);
+        box-shadow: 0 10px 36px rgba(0, 0, 0, 0.3);
+        padding: var(--space-xl);
+    }
+
+    .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-md);
+        margin-top: var(--space-lg);
+    }
+
+    .stat-pill {
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        background: rgba(139, 92, 246, 0.08);
+        border-radius: var(--radius-md);
+        padding: var(--space-md);
+        text-align: center;
+    }
+
+    .stat-pill .label {
+        display: block;
+        font-size: 0.72rem;
+        color: var(--text-secondary-color);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .stat-pill .value {
+        display: block;
+        margin-top: var(--space-xs);
+        font-weight: 700;
+        color: var(--text-color);
+    }
+
+    .wallet-form-title,
+    .wallet-list-title {
+        margin: 0 0 var(--space-lg) 0;
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        color: var(--text-color);
+        font-size: 1.2rem;
+    }
+
+    .wallet-form .form-group {
+        margin-bottom: var(--space-md);
+    }
+
+    .wallet-form label {
+        display: block;
+        margin-bottom: var(--space-sm);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-secondary-color);
+        font-weight: 700;
+    }
+
+    .wallet-form input {
+        width: 100%;
+        background: rgba(139, 92, 246, 0.06);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-radius: var(--radius-md);
+        padding: var(--space-md);
+        color: var(--text-color);
+    }
+
+    .wallet-form input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(67, 24, 255, 0.15);
+    }
+
+    .input-group {
+        display: grid;
+        grid-template-columns: auto 1fr;
+    }
+
+    .input-group-text {
+        display: flex;
+        align-items: center;
+        padding: 0 var(--space-md);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-right: 0;
+        border-radius: var(--radius-md) 0 0 var(--radius-md);
+        color: var(--text-secondary-color);
+        background: rgba(139, 92, 246, 0.1);
+        font-weight: 700;
+    }
+
+    .input-group input {
+        border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    }
+
+    .wallet-submit {
+        width: 100%;
+        margin-top: var(--space-sm);
+    }
+
+    .wallet-list {
+        margin-top: var(--space-xl);
+    }
+
+    .wallet-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--space-lg);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        background: rgba(139, 92, 246, 0.06);
+        border-radius: var(--radius-md);
+        padding: var(--space-lg);
+        margin-bottom: var(--space-md);
+    }
+
+    .wallet-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .wallet-item-title {
+        margin: 0;
+        font-size: 1rem;
+        color: var(--text-color);
+    }
+
+    .wallet-item-sub {
+        color: var(--text-secondary-color);
+        font-size: 0.85rem;
+        margin-top: var(--space-xs);
+    }
+
+    .wallet-item-amount {
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: var(--primary-light);
+        white-space: nowrap;
+    }
+
+    .wallet-actions {
+        display: flex;
+        gap: var(--space-sm);
+    }
+
+    .btn-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius-sm);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        background: rgba(139, 92, 246, 0.08);
+        color: var(--text-secondary-color);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+
+    .btn-icon:hover {
+        color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    .btn-icon.delete-wallet:hover {
+        color: var(--danger);
+        border-color: var(--danger);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: var(--space-2xl);
+        color: var(--text-secondary-color);
+        border: 1px dashed rgba(139, 92, 246, 0.3);
+        border-radius: var(--radius-md);
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(8px);
+        z-index: 1200;
+    }
+
+    .modal.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        width: min(540px, 92%);
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 21, 53, 0.9) 100%);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-radius: var(--radius-lg);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+    }
+
+    .modal-header {
+        padding: var(--space-lg) var(--space-xl);
+        border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-header h3 {
+        margin: 0;
+        color: var(--text-color);
+    }
+
+    .close-modal {
+        border: 0;
+        background: transparent;
+        color: var(--text-secondary-color);
+        font-size: 1.4rem;
+        cursor: pointer;
+    }
+
+    .modal-body {
+        padding: var(--space-xl);
+    }
+
+    @media (max-width: 992px) {
+        .wallet-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .wallet-header h1 {
+            font-size: 1.7rem;
+        }
+
+        .stat-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .wallet-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .wallet-item-amount {
+            font-size: 1.1rem;
+        }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="page-container">
-    <div class="page-header">
-        <h1><i class="fas fa-wallet"></i> My Wallets</h1>
-        <p>Manage your digital wallets</p>
-    </div>
-
-    <div class="card-container">
-        <!-- Wallet Creation Form -->
-        <div class="card">
-            <div class="card-header">
-                <h2><i class="fas fa-plus-circle"></i> Create Wallet</h2>
+<div class="main-content">
+    <div class="wallet-page">
+        {% if messages %}
+        <div style="margin-bottom: var(--space-lg);">
+            {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %}" style="
+                padding: var(--space-md);
+                border-radius: var(--radius-md);
+                border: 1px solid rgba({% if message.tags == 'error' %}227,26,26{% else %}1,181,116{% endif %}, 0.3);
+                background: rgba({% if message.tags == 'error' %}227,26,26{% else %}1,181,116{% endif %}, 0.12);
+                color: {% if message.tags == 'error' %}var(--danger){% else %}var(--success){% endif %};
+            ">
+                {{ message }}
             </div>
-            <div class="card-body">
-                <form method="post" action="{% url 'wallet:create' %}">
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="wallet-header">
+            <div>
+                <h1><i class="fas fa-wallet"></i> My Wallet</h1>
+                <p>Manage your balance with Mo Wallet</p>
+            </div>
+        </div>
+
+        <div class="wallet-grid">
+            <section class="wallet-hero">
+                <div class="wallet-hero-top">
+                    <div class="wallet-hero-brand">Mo Wallet</div>
+                    <div class="wallet-hero-chip"></div>
+                </div>
+                <div>
+                    <div class="wallet-balance-label">Available Balance</div>
+                    <div class="wallet-balance-value">KES {{ total_balance|floatformat:2|intcomma }}</div>
+                </div>
+                <div class="wallet-hero-footer">
+                    <span class="wallet-hero-meta">Wallets: {{ total_wallets }}</span>
+                    <span class="wallet-hero-meta">Updated live</span>
+                </div>
+            </section>
+
+            <section class="vision-card">
+                <h3 class="wallet-form-title"><i class="fas fa-pen"></i> {% if wallets %}Update Balance{% else %}Create Wallet{% endif %}</h3>
+                <form method="post" action="{% url 'wallet:create' %}" class="wallet-form">
                     {% csrf_token %}
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="{{ form.name.id_for_label }}">Wallet Name</label>
-                            {{ form.name }}
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="{{ form.balance.id_for_label }}">Initial Balance</label>
-                            <div class="input-group">
-                                <span class="input-group-text">KES</span>
-                                {{ form.balance }}
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="{{ form.currency.id_for_label }}">Currency</label>
-                            {{ form.currency }}
-                        </div>
-                        
-                        <div class="form-group full-width">
-                            <label for="{{ form.description.id_for_label }}">Description</label>
-                            {{ form.description }}
+                    <div class="form-group">
+                        <label for="{{ form.balance.id_for_label }}">Balance</label>
+                        <div class="input-group">
+                            <span class="input-group-text">KES</span>
+                            {{ form.balance }}
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i> Create Wallet
+                    <button type="submit" class="btn btn-primary wallet-submit">
+                        <i class="fas fa-save"></i> {% if wallets %}Save Balance{% else %}Create Wallet{% endif %}
                     </button>
                 </form>
-            </div>
-        </div>
 
-        <!-- Wallets Summary -->
-        <div class="card">
-            <div class="card-header">
-                <h2><i class="fas fa-chart-pie"></i> Wallets Overview</h2>
-            </div>
-            <div class="card-body">
-                <div class="wallets-summary">
-                    <div class="summary-item">
-                        <div class="summary-label">Total Wallets</div>
-                        <div class="summary-value">{{ total_wallets }}</div>
+                <div class="stat-grid">
+                    <div class="stat-pill">
+                        <span class="label">Wallet Count</span>
+                        <span class="value">{{ total_wallets }}</span>
                     </div>
-                    <div class="summary-item">
-                        <div class="summary-label">Total Balance</div>
-                        <div class="summary-value">Ksh {{ total_balance|default:"0" }}</div>
+                    <div class="stat-pill">
+                        <span class="label">Total Balance</span>
+                        <span class="value">KES {{ total_balance|floatformat:0|intcomma }}</span>
                     </div>
-                    <div class="summary-item">
-                        <div class="summary-label">Main Wallet</div>
-                        <div class="summary-value">Ksh {{ main_wallet_balance|default:"0" }}</div>
+                    <div class="stat-pill">
+                        <span class="label">Main Wallet</span>
+                        <span class="value">KES {{ main_wallet_balance|floatformat:0|intcomma }}</span>
                     </div>
                 </div>
-            </div>
+            </section>
         </div>
-    </div>
 
-    <!-- Wallets List -->
-    <div class="card">
-        <div class="card-header">
-            <h2><i class="fas fa-list"></i> Your Wallets</h2>
-        </div>
-        <div class="card-body">
+        <section class="vision-card wallet-list">
+            <h3 class="wallet-list-title"><i class="fas fa-layer-group"></i> Wallet Overview</h3>
             {% if wallets %}
-            <div class="wallets-grid">
                 {% for wallet in wallets %}
-                <div class="wallet-card">
-                    <div class="wallet-header">
-                        <h3>{{ wallet.name }}</h3>
-                        {% if wallet.is_main %}
-                        <span class="badge primary">Main Wallet</span>
-                        {% endif %}
+                <article class="wallet-item">
+                    <div>
+                        <h4 class="wallet-item-title">{{ request.user.username }} Wallet</h4>
+                        <p class="wallet-item-sub">Created {{ wallet.created_at|date:"M d, Y" }} • Last update {{ wallet.updated_at|date:"M d, Y" }}</p>
+                        <div class="wallet-actions" style="margin-top: var(--space-sm);">
+                            <button class="btn-icon edit-wallet" data-id="{{ wallet.id }}" title="Edit wallet">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-icon delete-wallet" data-id="{{ wallet.id }}" title="Delete wallet">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </div>
-                    
-                    <div class="wallet-balance">
-                        <span class="label">Current Balance</span>
-                        <span class="amount">{{ wallet.currency }} {{ wallet.balance|floatformat:2 }}</span>
-                    </div>
-                    
-                    <div class="wallet-info">
-                        <p>{{ wallet.description }}</p>
-                    </div>
-                    
-                    <div class="wallet-actions">
-                        <button class="btn btn-secondary transfer-funds" data-id="{{ wallet.id }}">
-                            <i class="fas fa-exchange-alt"></i> Transfer
-                        </button>
-                        <button class="btn-icon edit-wallet" data-id="{{ wallet.id }}">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        {% if not wallet.is_main %}
-                        <button class="btn-icon delete-wallet" data-id="{{ wallet.id }}">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                        {% endif %}
-                    </div>
-                </div>
+                    <div class="wallet-item-amount">KES {{ wallet.balance|floatformat:2|intcomma }}</div>
+                </article>
                 {% endfor %}
-            </div>
             {% else %}
-            <div class="empty-state">
-                <i class="fas fa-wallet"></i>
-                <p>No wallets created yet</p>
-                <p>Create your first wallet to start managing your money</p>
-            </div>
+                <div class="empty-state">
+                    <i class="fas fa-wallet" style="font-size: 2rem; margin-bottom: var(--space-md);"></i>
+                    <p style="margin: 0;">No wallet yet. Set your opening balance to get started.</p>
+                </div>
             {% endif %}
-        </div>
+        </section>
     </div>
 </div>
 
-<!-- Edit Wallet Modal -->
 <div class="modal" id="edit-wallet-modal">
     <div class="modal-content">
         <div class="modal-header">
             <h3>Edit Wallet</h3>
-            <button class="close-modal">&times;</button>
+            <button class="close-modal" type="button">&times;</button>
         </div>
-        <div class="modal-body">
-            <!-- Form will be loaded via AJAX -->
-        </div>
+        <div class="modal-body"></div>
     </div>
 </div>
-
-<!-- Transfer Funds Modal -->
-<div class="modal" id="transfer-modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>Transfer Funds</h3>
-            <button class="close-modal">&times;</button>
-        </div>
-        <div class="modal-body">
-            <form id="transfer-form">
-                {% csrf_token %}
-                <input type="hidden" name="source_wallet" id="source-wallet">
-                <div class="form-group">
-                    <label for="destination-wallet">To Wallet</label>
-                    <select name="destination_wallet" id="destination-wallet" class="form-control" required>
-                        {% for wallet in wallets %}
-                        <option value="{{ wallet.id }}">{{ wallet.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="amount">Amount</label>
-                    <div class="input-group">
-                        <span class="input-group-text">KES</span>
-                        <input type="number" name="amount" id="amount" class="form-control" required>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <input type="text" name="description" id="description" class="form-control">
-                </div>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-paper-plane"></i> Transfer
-                </button>
-            </form>
-        </div>
-    </div>
-</div>
-
 {% endblock %}
 
-{% block scripts %}
+{% block extra_js %}
 <script>
 $(document).ready(function() {
-    // Edit wallet
-    $('.edit-wallet').click(function() {
+    $('.edit-wallet').on('click', function() {
         const walletId = $(this).data('id');
         $.get(`{% url 'wallet:edit' '0' %}`.replace('0', walletId), function(data) {
             $('#edit-wallet-modal .modal-body').html(data);
@@ -189,9 +496,8 @@ $(document).ready(function() {
         });
     });
 
-    // Delete wallet
-    $('.delete-wallet').click(function() {
-        if(confirm('Are you sure you want to delete this wallet? This action cannot be undone.')) {
+    $('.delete-wallet').on('click', function() {
+        if (confirm('Delete this wallet? This action cannot be undone.')) {
             const walletId = $(this).data('id');
             $.ajax({
                 url: `{% url 'wallet:delete' '0' %}`.replace('0', walletId),
@@ -206,27 +512,15 @@ $(document).ready(function() {
         }
     });
 
-    // Transfer funds
-    $('#transfer-form').submit(function(e) {
-        e.preventDefault();
-        const formData = $(this).serialize();
-        
-        $.ajax({
-            url: '{% url "wallet:transfer" %}',
-            method: 'POST',
-            data: formData,
-            success: function() {
-                location.reload();
-            }
-        });
+    $('.close-modal').on('click', function() {
+        $('#edit-wallet-modal').removeClass('active');
     });
 
-    // Close modals
-    $('.close-modal').click(function() {
-        $('.modal').removeClass('active');
-        // Reset transfer form
-        $('#transfer-form')[0].reset();
-        $('#destination-wallet option').prop('disabled', false);
+    $(window).on('click', function(e) {
+        const modal = $('#edit-wallet-modal');
+        if (e.target === modal[0]) {
+            modal.removeClass('active');
+        }
     });
 });
 </script>

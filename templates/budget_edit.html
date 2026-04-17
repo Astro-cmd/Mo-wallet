@@ -1,133 +1,341 @@
-{% extends 'base.html' %}
+{% extends 'base_vision.html' %}
 {% load humanize %}
 
+{% block extra_css %}
+<style>
+    /* ===== Budget Edit Form ===== */
+    .budget-edit-form {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: var(--space-lg);
+    }
+
+    .form-group label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--text-secondary-color);
+        margin-bottom: var(--space-sm);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        background: rgba(139, 92, 246, 0.05);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-radius: var(--radius-md);
+        padding: var(--space-md);
+        color: var(--text-color);
+        font-size: 0.95rem;
+        transition: all var(--transition-fast);
+        font-family: inherit;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: rgba(139, 92, 246, 0.1);
+        box-shadow: 0 0 0 3px rgba(91, 33, 182, 0.1);
+    }
+
+    .input-group {
+        display: flex;
+        align-items: stretch;
+        gap: 0;
+    }
+
+    .input-group-text {
+        background: rgba(139, 92, 246, 0.1);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-right: none;
+        padding: var(--space-md);
+        border-radius: var(--radius-md) 0 0 var(--radius-md);
+        color: var(--primary);
+        font-weight: 600;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+    }
+
+    .input-group input {
+        border-radius: 0 var(--radius-md) var(--radius-md) 0;
+        flex: 1;
+        border-left: none;
+    }
+
+    .input-group input:focus {
+        border-color: var(--primary);
+    }
+
+    .error-message {
+        color: var(--danger);
+        font-size: 0.8rem;
+        margin-top: var(--space-sm);
+        font-weight: 500;
+    }
+
+    .form-text {
+        color: var(--text-secondary-color);
+        font-size: 0.8rem;
+        margin-top: var(--space-sm);
+    }
+
+    .form-actions {
+        display: flex;
+        gap: var(--space-md);
+        margin-top: var(--space-2xl);
+        padding-top: var(--space-xl);
+        border-top: 1px solid rgba(139, 92, 246, 0.1);
+    }
+
+    .btn {
+        padding: var(--space-md) var(--space-lg);
+        border-radius: var(--radius-md);
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        transition: all var(--transition-base);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-sm);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(91, 33, 182, 0.3);
+    }
+
+    .btn-secondary {
+        background: rgba(139, 92, 246, 0.1);
+        color: var(--text-secondary-color);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+
+    .btn-secondary:hover {
+        background: rgba(139, 92, 246, 0.15);
+        color: var(--text-color);
+    }
+
+    .transaction-container {
+        margin-top: var(--space-2xl);
+    }
+
+    .transaction-header {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-color);
+        margin-bottom: var(--space-lg);
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        color: var(--text-color);
+    }
+
+    .table thead {
+        background: rgba(139, 92, 246, 0.05);
+        border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+    }
+
+    .table th {
+        padding: var(--space-md);
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-secondary-color);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .table td {
+        padding: var(--space-md);
+        border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+    }
+
+    .table tbody tr:hover {
+        background: rgba(139, 92, 246, 0.03);
+    }
+
+    .amount {
+        font-weight: 600;
+        color: var(--primary);
+    }
+
+    .text-muted {
+        color: var(--text-secondary-color);
+    }
+
+    .text-center {
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="page-container">
-    {% if messages %}
-    <div class="messages">
-        {% for message in messages %}
-        <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% else %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-    <div class="page-header">
-        <h1><i class="fas fa-edit"></i> Edit Budget</h1>
-    </div>
-
-    <div class="card">
-        <div class="card-body">
-            <form method="post" action="{% url 'budget:edit' budget.id %}" class="budget-form">
-                {% csrf_token %}
-                
-                {% if form.non_field_errors %}
-                <div class="alert alert-danger">
-                    {% for error in form.non_field_errors %}
-                        {{ error }}
-                    {% endfor %}
-                </div>
-                {% endif %}
-
-                <div class="form-group">
-                    <label for="{{ form.category.id_for_label }}">Category</label>
-                    {{ form.category }}
-                    {% if form.category.errors %}
-                        <div class="error-message">{{ form.category.errors }}</div>
-                    {% endif %}
-                </div>
-
-                <div class="form-group">
-                    <label for="{{ form.limit.id_for_label }}">Monthly Limit</label>
-                    <div class="input-group">
-                        <span class="input-group-text">KES</span>
-                        {{ form.limit }}
-                    </div>
-                    {% if form.limit.errors %}
-                        <div class="error-message">{{ form.limit.errors }}</div>
-                    {% endif %}
-                </div>
-
-                <div class="form-group">
-                    <label for="{{ form.amount_spent.id_for_label }}">Amount Spent</label>
-                    <div class="input-group">
-                        <span class="input-group-text">KES</span>
-                        {{ form.amount_spent }}
-                    </div>
-                    {% if form.amount_spent.errors %}
-                        <div class="error-message">{{ form.amount_spent.errors }}</div>
-                    {% endif %}
-                    <small class="form-text text-muted">Current spending in this category this month</small>
-                </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i> Save Changes
-                    </button>
-                    <a href="{% url 'budget:budgets' %}" class="btn btn-secondary">
-                        <i class="fas fa-times"></i> Cancel
-                    </a>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Current Month's Transactions -->
-    <div class="card mt-4">
-        <div class="card-header">
-            <h2>Related Transactions</h2>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Description</th>
-                            <th>Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for transaction in transactions %}
-                        <tr>
-                            <td>{{ transaction.transaction_date|date:"M d, Y" }}</td>
-                            <td>{{ transaction.description }}</td>
-                            <td class="amount">Ksh {{ transaction.amount|floatformat:2|intcomma }}</td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="3" class="text-center">No transactions in this category this month</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                    {% if transactions %}
-                    <tfoot>
-                        <tr>
-                            <td colspan="2" class="text-end"><strong>Total:</strong></td>
-                            <td class="amount"><strong>Ksh {{ total_transactions|floatformat:2|intcomma }}</strong></td>
-                        </tr>
-                    </tfoot>
-                    {% endif %}
-                </table>
+<div class="main-content">
+    <div style="padding: var(--space-2xl) 0;">
+        <div class="budget-edit-form">
+            <!-- Page Header -->
+            <div style="
+                display: flex;
+                align-items: center;
+                gap: var(--space-md);
+                margin-bottom: var(--space-2xl);
+                padding-bottom: var(--space-xl);
+                border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+            ">
+                <i class="fas fa-edit" style="font-size: 1.5rem; color: var(--primary);"></i>
+                <h1 style="margin: 0; font-size: 2rem; font-weight: 800; color: var(--text-color);">Edit Budget</h1>
             </div>
+
+            <!-- Form Card -->
+            <div style="
+                background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 21, 53, 0.7) 100%);
+                border: 1px solid rgba(139, 92, 246, 0.2);
+                border-radius: var(--radius-lg);
+                padding: var(--space-xl);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+                margin-bottom: var(--space-2xl);
+            ">
+                <form method="post" action="{% url 'budget:edit' budget.id %}">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                    <div style="
+                        background: rgba(227, 26, 26, 0.1);
+                        border: 1px solid rgba(227, 26, 26, 0.3);
+                        border-radius: var(--radius-md);
+                        color: var(--danger);
+                        padding: var(--space-md);
+                        margin-bottom: var(--space-lg);
+                    ">
+                        {% for error in form.non_field_errors %}
+                            <p style="margin: 0;">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Category Field -->
+                    <div class="form-group">
+                        <label for="{{ form.category.id_for_label }}">Category</label>
+                        {{ form.category }}
+                        {% if form.category.errors %}
+                            <div class="error-message">
+                                {% for error in form.category.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Monthly Limit Field -->
+                    <div class="form-group">
+                        <label for="{{ form.limit.id_for_label }}">Monthly Limit</label>
+                        <div class="input-group">
+                            <span class="input-group-text">KES</span>
+                            {{ form.limit }}
+                        </div>
+                        {% if form.limit.errors %}
+                            <div class="error-message">
+                                {% for error in form.limit.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Amount Spent Field -->
+                    <div class="form-group">
+                        <label for="{{ form.amount_spent.id_for_label }}">Amount Spent</label>
+                        <div class="input-group">
+                            <span class="input-group-text">KES</span>
+                            {{ form.amount_spent }}
+                        </div>
+                        {% if form.amount_spent.errors %}
+                            <div class="error-message">
+                                {% for error in form.amount_spent.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                        <small class="form-text">Current spending in this category this month</small>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                        <a href="{% url 'budget:budgets' %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Related Transactions Section -->
+            {% if transactions %}
+            <div class="transaction-container">
+                <div style="
+                    background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 21, 53, 0.7) 100%);
+                    border: 1px solid rgba(139, 92, 246, 0.2);
+                    border-radius: var(--radius-lg);
+                    padding: var(--space-xl);
+                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+                ">
+                    <h2 class="transaction-header">
+                        <i class="fas fa-history"></i> Related Transactions
+                    </h2>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for transaction in transactions %}
+                                <tr>
+                                    <td>{{ transaction.transaction_date|date:"M d, Y" }}</td>
+                                    <td>{{ transaction.description }}</td>
+                                    <td class="amount">KES {{ transaction.amount|floatformat:0|intcomma }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div style="
+                background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 21, 53, 0.7) 100%);
+                border: 1px solid rgba(139, 92, 246, 0.2);
+                border-radius: var(--radius-lg);
+                padding: var(--space-xl);
+                text-align: center;
+                color: var(--text-secondary-color);
+            ">
+                <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: var(--space-md); opacity: 0.5;"></i>
+                <p>No transactions in this category this month</p>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Auto-format currency inputs
-    const currencyInputs = document.querySelectorAll('input[type="number"]');
-    currencyInputs.forEach(input => {
-        input.addEventListener('blur', function() {
-            if (this.value) {
-                this.value = parseFloat(this.value).toFixed(2);
-            }
-        });
-    });
-});
-</script>
 {% endblock %}

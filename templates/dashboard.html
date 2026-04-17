@@ -1,8 +1,9 @@
-{% extends 'base.html' %}
+{% extends 'base_vision.html' %}
 {% load humanize %}
 {% load custom_filters %}
 
 {% block content %}
+<div class="main-content">
 <div class="container-fluid">
     {% if dashboard_message %}
     <div class="alert alert-info alert-dismissible fade show" role="alert" style="background-color: #33ff00; color: #02104f;">
@@ -281,16 +282,197 @@
 
 {% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Dashboard Color Overrides - Official Palette */
+    .main-content {
+        padding: 0;
+    }
+    
+    /* Card styling overrides */
+    .card {
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 21, 53, 0.6) 100%) !important;
+        border: 1px solid rgba(139, 92, 246, 0.2) !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(139, 92, 246, 0.1) !important;
+        backdrop-filter: blur(10px);
+    }
+    
+    .card-header {
+        background: linear-gradient(135deg, #4318FF 0%, #9F7AEA 100%) !important;
+        border: none !important;
+        color: white !important;
+    }
+    
+    .card-header h6 {
+        color: white !important;
+    }
+    
+    .card-body {
+        color: var(--text-color);
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 21, 53, 0.6) 100%);
+    }
+    
+    /* Progress bars */
+    .progress {
+        background-color: rgba(139, 92, 246, 0.1) !important;
+    }
+    
+    .progress-bar {
+        background: linear-gradient(90deg, #4318FF 0%, #9F7AEA 100%) !important;
+    }
+    
+    .progress-bar.bg-success {
+        background: linear-gradient(90deg, #01B574 0%, #34D399 100%) !important;
+    }
+    
+    .progress-bar.bg-warning {
+        background: linear-gradient(90deg, #FFB547 0%, #FBBF24 100%) !important;
+    }
+    
+    .progress-bar.bg-danger {
+        background: linear-gradient(90deg, #E31A1A 0%, #F87171 100%) !important;
+    }
+    
+    /* Button styling */
+    .btn-light {
+        background-color: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: #4318FF;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #4318FF 0%, #9F7AEA 100%) !important;
+        border: none !important;
+        box-shadow: 0 10px 25px rgba(67, 24, 255, 0.3);
+    }
+    
+    .btn-primary:hover {
+        box-shadow: 0 15px 35px rgba(67, 24, 255, 0.4);
+        transform: translateY(-2px);
+    }
+    
+    /* Table styling */
+    .table {
+        color: var(--text-color);
+    }
+    
+    .table thead {
+        background-color: rgba(0, 0, 0, 0.2);
+        border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+    }
+    
+    .table thead th {
+        color: var(--text-secondary-color);
+        border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+    }
+    
+    .table tbody tr {
+        border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+    }
+    
+    .table tbody tr:hover {
+        background-color: rgba(67, 24, 255, 0.08);
+    }
+    
+    /* Badge styling */
+    .badge.bg-success {
+        background-color: rgba(1, 181, 116, 0.15) !important;
+        color: #01B574;
+    }
+    
+    .badge.bg-danger {
+        background-color: rgba(227, 26, 26, 0.15) !important;
+        color: #E31A1A;
+    }
+    
+    .badge.bg-info {
+        background-color: rgba(0, 117, 255, 0.15) !important;
+        color: #0075FF;
+    }
+    
+    .badge.bg-warning {
+        background-color: rgba(255, 181, 71, 0.15) !important;
+        color: #FFB547;
+    }
+    
+    /* Text colors */
+    .text-success {
+        color: #01B574 !important;
+    }
+    
+    .text-danger {
+        color: #E31A1A !important;
+    }
+    
+    .text-muted {
+        color: var(--text-muted) !important;
+    }
+    
+    /* Border colors */
+    .border-danger {
+        border: color: rgba(227, 26, 26, 0.3) !important;
+    }
+    
+    .border-success {
+        border-color: rgba(1, 181, 116, 0.3) !important;
+    }
+    
+    .border-warning {
+        border-color: rgba(255, 181, 71, 0.3) !important;
+    }
+    
+    /* Row spacing */
+    .row {
+        margin-left: var(--space-lg);
+        margin-right: var(--space-lg);
+        margin-bottom: var(--space-lg);
+    }
+    
+    .row:first-child {
+        margin-top: var(--space-lg);
+    }
+    
+    /* Form select styling */
+    .form-select {
+        background-color: rgba(67, 24, 255, 0.05);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        color: var(--text-color);
+    }
+    
+    .form-select:focus {
+        border-color: #4318FF;
+        background-color: rgba(67, 24, 255, 0.1);
+        box-shadow: 0 0 0 3px rgba(67, 24, 255, 0.1);
+    }
+    
+    .form-select option {
+        background-color: #0F1535;
+        color: var(--text-color);
+    }
+    
+    /* Alert styling */
+    .alert-info {
+        background-color: rgba(0, 117, 255, 0.15) !important;
+        color: #0075FF !important;
+        border: 1px solid rgba(0, 117, 255, 0.3) !important;
+    }
+    
+    .alert-dismissible .btn-close {
+        filter: invert(1);
+    }
+</style>
+{% endblock %}
+
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     const initialPeriod = '{{ selected_period }}';
     const colors = {
-        primary: '#4e73df',
-        success: '#1cc88a',
-        danger: '#e74a3b',
-        warning: '#f6c23e',
-        info: '#36b9cc'
+        primary: '#4318FF',
+        success: '#01B574',
+        danger: '#E31A1A',
+        warning: '#FFB547',
+        info: '#0075FF'
     };
     
     // Income vs Expense Chart
@@ -302,15 +484,15 @@
             datasets: [{
                 label: 'Income',
                 data: {{ income_data|safe }},
-                backgroundColor: '#33ff00',
-                borderColor: '#33ff00',
+                backgroundColor: 'rgba(1, 181, 116, 0.8)',
+                borderColor: '#01B574',
                 borderWidth: 1
             },
             {
                 label: 'Expenses',
                 data: {{ expense_data|safe }},
-                backgroundColor: '#ff2511',
-                borderColor: '#ff2511',
+                backgroundColor: 'rgba(227, 26, 26, 0.8)',
+                borderColor: '#E31A1A',
                 borderWidth: 1
             }]
         },
@@ -321,20 +503,33 @@
                 y: {
                     beginAtZero: true,
                     ticks: {
+                        color: 'var(--text-secondary-color)',
                         callback: function(value) {
                             return 'KES ' + value.toLocaleString();
                         }
                     },
                     grid: {
-                        color: 'rgba(0,0,0,0.1)'
+                        color: 'rgba(139, 92, 246, 0.1)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: 'var(--text-secondary-color)'
+                    },
+                    grid: {
+                        display: false
                     }
                 }
             },
             plugins: {
                 legend: {
-                    position: 'top'
+                    labels: {
+                        color: 'var(--text-color)',
+                        font: { size: 12, weight: '500' }
+                    }
                 },
                 tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
                     callbacks: {
                         label: function(context) {
                             let label = context.dataset.label || '';
@@ -358,7 +553,7 @@
             labels: {{ expense_categories|safe }},
             datasets: [{
                 data: {{ category_amounts|safe }},
-                backgroundColor: {{ category_colors|safe }},
+                backgroundColor: 'rgba(67, 24, 255, 0.8)',
                 borderWidth: 1
             }]
         },
@@ -367,20 +562,13 @@
             maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    position: 'right',
                     labels: {
-                        generateLabels: function(chart) {
-                            const data = chart.data;
-                            const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
-                            return data.labels.map((label, i) => ({
-                                text: label + ': ' + ((data.datasets[0].data[i] / total * 100).toFixed(1) + '%'),
-                                fillStyle: data.datasets[0].backgroundColor[i],
-                                index: i
-                            }));
-                        }
+                        color: 'var(--text-color)',
+                        font: { size: 12, weight: '500' }
                     }
                 },
                 tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
                     callbacks: {
                         label: function(context) {
                             const value = context.raw;
@@ -411,24 +599,6 @@
             return uri.replace(re, '$1' + key + "=" + value + '$2');
         } else {
             return uri + separator + key + "=" + value;
-        }
-    }
-
-    // Helper function to get appropriate time label
-    function getTimeLabel(period) {
-        switch(period) {
-            case 'yearly':
-                return 'Months';
-            case 'quarterly':
-                return 'Quarters';
-            case 'monthly':
-                return 'Weeks';
-            case 'weekly':
-                return 'Days';
-            case 'daily':
-                return 'Hours';
-            default:
-                return 'Time Period';
         }
     }
 </script>

@@ -1,0 +1,355 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Mo-Wallet</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            margin: 0;
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #03091f;
+            color: #fff;
+        }
+
+        .auth-shell {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr;
+            position: relative;
+        }
+
+        .top-nav {
+            position: fixed;
+            top: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(860px, calc(100% - 32px));
+            z-index: 20;
+            background: rgba(15, 21, 53, 0.65);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            backdrop-filter: blur(12px);
+            border-radius: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+        }
+
+        .brand {
+            letter-spacing: 0.18em;
+            font-weight: 700;
+            font-size: 0.88rem;
+            color: #dbe3ff;
+            text-transform: uppercase;
+            text-decoration: none;
+        }
+
+        .top-links {
+            display: flex;
+            gap: 22px;
+            align-items: center;
+        }
+
+        .top-links a {
+            color: #d4d8ea;
+            text-decoration: none;
+            font-size: 0.86rem;
+            font-weight: 600;
+        }
+
+        .buy-btn {
+            border: 0;
+            color: #fff;
+            background: linear-gradient(135deg, #0075FF 0%, #4da3ff 100%);
+            font-size: 0.78rem;
+            font-weight: 700;
+            border-radius: 12px;
+            padding: 11px 18px;
+        }
+
+        .auth-left {
+            display: none;
+            position: relative;
+            background: linear-gradient(120deg, rgba(3, 8, 28, 0.72), rgba(9, 14, 44, 0.3)),
+                url("{% static 'images/login page.jpg' %}") center center / cover no-repeat;
+            overflow: hidden;
+        }
+
+        .auth-left::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 70% 10%, rgba(138, 92, 246, 0.45), transparent 38%);
+        }
+
+        .left-copy {
+            position: absolute;
+            left: 9%;
+            right: 9%;
+            bottom: 14%;
+            z-index: 2;
+        }
+
+        .left-copy .eyebrow {
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: rgba(240, 244, 255, 0.9);
+            margin-bottom: 14px;
+            font-size: 0.9rem;
+        }
+
+        .left-copy h1 {
+            margin: 0;
+            font-size: clamp(2.2rem, 4vw, 3.3rem);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #fff;
+        }
+
+        .auth-right {
+            background: linear-gradient(145deg, #050d31 0%, #060f3f 40%, #040a2a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 94px 20px 40px;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 470px;
+            padding: 22px 8px;
+        }
+
+        .form-header h2 {
+            margin: 0;
+            font-size: 2.5rem;
+            color: #F8FAFC;
+            font-weight: 800;
+        }
+
+        .form-header p {
+            margin-top: 8px;
+            margin-bottom: 28px;
+            color: #A7B0CC;
+            font-size: 1.02rem;
+        }
+
+        .field {
+            margin-bottom: 14px;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #D9E1FF;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .field input {
+            width: 100%;
+            background: rgba(15, 25, 61, 0.88);
+            border: 2px solid rgba(129, 143, 186, 0.3);
+            border-radius: 14px;
+            color: #F8FAFC;
+            padding: 13px 14px;
+            font-size: 0.94rem;
+            box-sizing: border-box;
+            transition: all 180ms ease;
+        }
+
+        .field input:focus {
+            outline: none;
+            border-color: #3BA3FF;
+            box-shadow: 0 0 0 3px rgba(0, 117, 255, 0.2);
+        }
+
+        .field input::placeholder {
+            color: #7383b7;
+        }
+
+        .error {
+            color: #ffb4b4;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        .non-field-error {
+            margin-bottom: 16px;
+            border-radius: 12px;
+            padding: 11px 13px;
+            font-size: 0.88rem;
+            border: 1px solid rgba(239, 68, 68, 0.45);
+            background: rgba(127, 29, 29, 0.22);
+            color: #ffcece;
+        }
+
+        .hint {
+            margin-top: 6px;
+            color: #8f9ccb;
+            font-size: 0.75rem;
+        }
+
+        .submit-btn {
+            width: 100%;
+            border: none;
+            border-radius: 14px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 14px;
+            background: linear-gradient(135deg, #0075FF 0%, #3A8DFF 100%);
+            box-shadow: 0 10px 30px rgba(0, 117, 255, 0.35);
+            cursor: pointer;
+        }
+
+        .switch {
+            margin-top: 16px;
+            text-align: center;
+            color: #aab6de;
+            font-size: 0.95rem;
+        }
+
+        .switch a {
+            color: #7ca8ff;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        @media (min-width: 1100px) {
+            .auth-shell {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .auth-left {
+                display: block;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .top-links {
+                gap: 12px;
+            }
+
+            .top-links a {
+                font-size: 0.75rem;
+            }
+
+            .buy-btn {
+                display: none;
+            }
+
+            .form-header h2 {
+                font-size: 2.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-shell">
+        <nav class="top-nav">
+            <a class="brand" href="{% url 'core:home' %}">Mo Wallet</a>
+            <div class="top-links">
+                <a href="{% url 'core:dashboard' %}"><i class="fas fa-house"></i> Dashboard</a>
+                <a href="{% url 'users:profile' %}"><i class="fas fa-user"></i> Profile</a>
+                <a href="{% url 'users:signup' %}"><i class="fas fa-user-plus"></i> Sign Up</a>
+                <a href="{% url 'users:login' %}"><i class="fas fa-key"></i> Sign In</a>
+            </div>
+        </nav>
+
+        <aside class="auth-left">
+            <div class="left-copy">
+                <div class="eyebrow">Mo Wallet Financial Command Center:</div>
+                <h1>Build your wallet command center</h1>
+            </div>
+        </aside>
+
+        <div class="auth-right">
+            <div class="auth-card">
+                <div class="form-header">
+                    <h2>Create Account</h2>
+                    <p>Enter your details to unlock your financial dashboard</p>
+                </div>
+
+                <form id="signupForm" method="post" action="{% url 'users:signup' %}" novalidate>
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="non-field-error">
+                            <i class="fas fa-circle-exclamation"></i> {{ form.non_field_errors.0 }}
+                        </div>
+                    {% endif %}
+
+                    <div class="field">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" required placeholder="Choose a username" value="{{ form.username.value|default:'' }}">
+                        {% if form.username.errors %}<div class="error">{{ form.username.errors.0 }}</div>{% endif %}
+                    </div>
+
+                    <div class="field">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" required placeholder="you@example.com" value="{{ form.email.value|default:'' }}">
+                        {% if form.email.errors %}<div class="error">{{ form.email.errors.0 }}</div>{% endif %}
+                    </div>
+
+                    <div class="field">
+                        <label for="phone_number">Phone Number</label>
+                        <input type="text" id="phone_number" name="phone_number" required placeholder="07... or 2547... or 01..." value="{{ form.phone_number.value|default:'' }}">
+                        {% if form.phone_number.errors %}<div class="error">{{ form.phone_number.errors.0 }}</div>{% endif %}
+                    </div>
+
+                    <div class="field">
+                        <label for="password1">Password</label>
+                        <input type="password" id="password1" name="password1" required placeholder="Create a strong password">
+                        <div class="hint">Use at least 8 characters with letters and numbers.</div>
+                        {% if form.password1.errors %}<div class="error">{{ form.password1.errors.0 }}</div>{% endif %}
+                    </div>
+
+                    <div class="field">
+                        <label for="password2">Confirm Password</label>
+                        <input type="password" id="password2" name="password2" required placeholder="Confirm your password">
+                        {% if form.password2.errors %}<div class="error">{{ form.password2.errors.0 }}</div>{% endif %}
+                    </div>
+
+                    <button type="submit" class="submit-btn" onclick="return validateForm()">
+                        <i class="fas fa-user-plus"></i> Create Account
+                    </button>
+                </form>
+
+                <p class="switch">
+                    Already have an account?
+                    <a href="{% url 'users:login' %}">Sign in here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function validateForm() {
+            const password1 = document.getElementById('password1').value;
+            const password2 = document.getElementById('password2').value;
+
+            if (password1 !== password2) {
+                alert('Passwords do not match.');
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+</body>
+</html>

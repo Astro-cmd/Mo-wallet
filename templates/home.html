@@ -1,236 +1,484 @@
-{% extends 'base.html' %}
-{% load static%}
-
-{% block title %}Home - Mo-Wallet{% endblock %}
-
-{% block content %}
+{% load static %}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mo-Wallet - Personal Finance Management</title>
+    <title>Mo Wallet | Smart Money Companion</title>
+    <meta name="description" content="Mo Wallet is a smart money companion for budgeting, tracking spending, managing goals, and organizing payments.">
+    <meta name="robots" content="index,follow">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+    <meta name="theme-color" content="#04162f">
+    <meta property="og:site_name" content="Mo Wallet">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Mo Wallet | Smart Money Companion">
+    <meta property="og:description" content="Mo Wallet is a smart money companion for budgeting, tracking spending, managing goals, and organizing payments.">
+    <meta property="og:image" content="{% static 'images/mo-wallet.jpg' %}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Mo Wallet | Smart Money Companion">
+    <meta name="twitter:description" content="Mo Wallet is a smart money companion for budgeting, tracking spending, managing goals, and organizing payments.">
+    <meta name="twitter:image" content="{% static 'images/mo-wallet.jpg' %}">
+    <link rel="icon" type="image/svg+xml" href="{% static 'images/wallet-favicon.svg' %}">
+    <link rel="icon" type="image/jpeg" href="{% static 'images/mo-wallet.jpg' %}">
+    <link rel="shortcut icon" type="image/svg+xml" href="{% static 'images/wallet-favicon.svg' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/home.css' %}">
-    <script src="{% static 'js/home.js' %}"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-1: #04162f;
+            --bg-2: #072f4f;
+            --bg-3: #0b4f73;
+            --glass: rgba(8, 30, 51, 0.62);
+            --stroke: rgba(155, 212, 241, 0.28);
+            --text: #ecf7ff;
+            --muted: #b8d8ea;
+            --accent: #0ec5b7;
+            --accent-2: #45e3c9;
+            --sun: #ffc857;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            color: var(--text);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background:
+                radial-gradient(circle at 12% 12%, rgba(14, 197, 183, 0.28), transparent 30%),
+                radial-gradient(circle at 88% 10%, rgba(255, 200, 87, 0.22), transparent 26%),
+                linear-gradient(130deg, var(--bg-1) 0%, var(--bg-2) 42%, var(--bg-3) 100%);
+            min-height: 100vh;
+            animation: sceneEnter 0.7s ease;
+        }
+
+        @keyframes sceneEnter {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .nav-wrap {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            backdrop-filter: blur(8px);
+            background: rgba(2, 17, 32, 0.56);
+            border-bottom: 1px solid rgba(145, 210, 245, 0.25);
+        }
+
+        .nav {
+            width: min(1160px, calc(100% - 28px));
+            margin: 0 auto;
+            min-height: 74px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .logo {
+            font-family: 'Sora', sans-serif;
+            font-weight: 800;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+        }
+
+        .logo::before {
+            content: '';
+            width: 0.8rem;
+            height: 0.8rem;
+            border-radius: 999px;
+            background: linear-gradient(135deg, var(--accent), var(--sun));
+            box-shadow: 0 0 0 5px rgba(14, 197, 183, 0.2);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 18px;
+        }
+
+        .nav-links a {
+            color: #d8f0ff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -4px;
+            width: 100%;
+            height: 2px;
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.22s ease;
+            background: linear-gradient(90deg, var(--accent), var(--sun));
+        }
+
+        .nav-links a:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 12px;
+            padding: 11px 16px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.86rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            color: #e8fbff;
+            background: rgba(16, 51, 80, 0.5);
+            border: 1px solid rgba(141, 214, 245, 0.38);
+        }
+
+        .btn-primary {
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+            box-shadow: 0 9px 24px rgba(14, 197, 183, 0.35);
+        }
+
+        .container {
+            width: min(1160px, calc(100% - 28px));
+            margin: 0 auto;
+        }
+
+        .hero {
+            padding: 54px 0 24px;
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 22px;
+            align-items: stretch;
+        }
+
+        .hero-copy {
+            background: var(--glass);
+            border: 1px solid var(--stroke);
+            border-radius: 24px;
+            padding: clamp(24px, 4vw, 44px);
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 1px 0 rgba(225, 249, 255, 0.18), 0 25px 50px rgba(3, 12, 28, 0.35);
+        }
+
+        .hero-copy::after {
+            content: '';
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            background: radial-gradient(circle, rgba(255, 200, 87, 0.35), transparent 70%);
+            top: -100px;
+            right: -70px;
+        }
+
+        .eyebrow {
+            margin: 0;
+            font-size: 0.82rem;
+            letter-spacing: 0.25em;
+            color: #caefff;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-family: 'Sora', sans-serif;
+            margin-top: 14px;
+            margin-bottom: 14px;
+            line-height: 1.1;
+            font-size: clamp(2rem, 4.4vw, 3.6rem);
+        }
+
+        .hero-copy p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 1.02rem;
+            max-width: 59ch;
+        }
+
+        .hero-actions {
+            margin-top: 26px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .kpi-grid {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .kpi {
+            border: 1px solid rgba(136, 204, 236, 0.32);
+            border-radius: 14px;
+            background: rgba(6, 28, 48, 0.62);
+            padding: 12px;
+        }
+
+        .kpi .value {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #f4fdff;
+        }
+
+        .kpi .label {
+            margin-top: 4px;
+            font-size: 0.78rem;
+            color: #9fd0e7;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .hero-visual {
+            border-radius: 24px;
+            border: 1px solid var(--stroke);
+            overflow: hidden;
+            position: relative;
+            min-height: 420px;
+            background: linear-gradient(165deg, rgba(11, 35, 58, 0.7), rgba(5, 16, 28, 0.95));
+        }
+
+        .hero-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.66;
+        }
+
+        .float-card {
+            position: absolute;
+            right: 16px;
+            left: 16px;
+            bottom: 16px;
+            background: rgba(4, 21, 38, 0.75);
+            border: 1px solid rgba(134, 205, 236, 0.35);
+            border-radius: 16px;
+            padding: 14px;
+            backdrop-filter: blur(8px);
+        }
+
+        .float-card h3 {
+            margin: 0;
+            font-size: 0.98rem;
+            font-weight: 700;
+        }
+
+        .float-card p {
+            margin: 8px 0 0;
+            color: #b5d8e9;
+            font-size: 0.86rem;
+        }
+
+        .features {
+            padding: 18px 0 60px;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .feature {
+            border: 1px solid rgba(132, 206, 237, 0.25);
+            border-radius: 18px;
+            background: rgba(6, 24, 43, 0.62);
+            padding: 20px;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .feature:hover {
+            transform: translateY(-4px);
+            border-color: rgba(169, 226, 248, 0.45);
+        }
+
+        .feature i {
+            font-size: 1.18rem;
+            color: var(--accent-2);
+        }
+
+        .feature h3 {
+            margin: 12px 0 8px;
+            font-size: 1rem;
+        }
+
+        .feature p {
+            margin: 0;
+            color: #acd3e6;
+            font-size: 0.9rem;
+            line-height: 1.45;
+        }
+
+        @media (max-width: 1000px) {
+            .hero {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-visual {
+                min-height: 320px;
+            }
+
+            .features {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 760px) {
+            .nav {
+                flex-wrap: wrap;
+                justify-content: center;
+                padding: 8px 0 12px;
+            }
+
+            .nav-links {
+                order: 3;
+                width: 100%;
+                justify-content: center;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Header -->
-    
+    <header class="nav-wrap">
+        <div class="nav">
+            <div class="logo">Mo-Wallet</div>
+            <nav class="nav-links">
+                <a href="#features">Features</a>
+                <a href="{% url 'users:login' %}">Sign In</a>
+                <a href="{% url 'users:signup' %}">Sign Up</a>
+            </nav>
+            <div class="nav-actions">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'core:dashboard' %}" class="btn btn-primary"><i class="fas fa-chart-line"></i> Open Dashboard</a>
+                {% else %}
+                    <a href="{% url 'users:login' %}" class="btn btn-outline">Sign In</a>
+                    <a href="{% url 'users:signup' %}" class="btn btn-primary">Get Started</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-content">
-            <h1>Take Control of Your Finances with Mo-Wallet</h1>
-            <p>Track expenses, save money, and achieve your financial goals with our intuitive personal finance management system designed for Kenyans.</p>
-            
-            <div class="hero-buttons">
-                <button class="btn btn-primary">Get Started Free</button>
-                <button class="btn btn-outline">Learn More</button>
-            </div>
-            
-            <div class="hero-stats">
-                <div class="user-avatars">
-                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User">
-                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User">
-                    <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="User">
-                </div>
-                <span>Join 10,000+ happy users</span>
-            </div>
-        </div>
-        
-        <img src="{% static 'images/mo-wallet.jpg' %}" alt="Mo-Wallet Dashboard" class="hero-image">
-    </section>
+    <main class="container">
+        <section class="hero">
+            <div class="hero-copy">
+                <p class="eyebrow">Mo Wallet Experience</p>
+                <h1>Command your money with a cleaner, smarter financial cockpit.</h1>
+                <p>Mo-Wallet helps you track spending, protect your budget, and move toward savings goals with a dashboard experience built for clarity.</p>
 
-    <!-- Features Section -->
-    <section class="section" id="features">
-        <div class="section-title">
-            <h2>Powerful Features</h2>
-            <p>Everything you need to manage your money effectively</p>
-        </div>
-        
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-chart-pie"></i>
+                <div class="hero-actions">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'core:dashboard' %}" class="btn btn-primary"><i class="fas fa-gauge-high"></i> Go To Dashboard</a>
+                    {% else %}
+                        <a href="{% url 'users:signup' %}" class="btn btn-primary"><i class="fas fa-user-plus"></i> Create Free Account</a>
+                        <a href="{% url 'users:login' %}" class="btn btn-outline"><i class="fas fa-key"></i> I Already Have One</a>
+                    {% endif %}
                 </div>
-                <h3>Expense Analytics</h3>
-                <p>Visualize your spending patterns with beautiful charts and get insights to help you save more.</p>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-bullseye"></i>
-                </div>
-                <h3>Savings Goals</h3>
-                <p>Set financial goals and track your progress with our intuitive goal tracking system.</p>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-bell"></i>
-                </div>
-                <h3>Budget Alerts</h3>
-                <p>Get notified when you're approaching your budget limits to avoid overspending.</p>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-mobile-alt"></i>
-                </div>
-                <h3>Mobile Friendly</h3>
-                <p>Access your finances on the go with our fully responsive mobile interface.</p>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-lock"></i>
-                </div>
-                <h3>Bank-Level Security</h3>
-                <p>Your data is protected with industry-standard encryption and security protocols.</p>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-sync-alt"></i>
-                </div>
-                <h3>M-Pesa Integration</h3>
-                <p>Automatically track your M-Pesa transactions with our seamless integration.</p>
-            </div>
-        </div>
-    </section>
 
-    <!-- Stats Section -->
-    <section class="stats">
-        <div class="stats-grid">
-            <div class="stat-item">
-                <div class="stat-number" id="users-count">0</div>
-                <div class="stat-label">Active Users</div>
+                <div class="kpi-grid">
+                    <article class="kpi">
+                        <div class="value">24/7</div>
+                        <div class="label">Visibility</div>
+                    </article>
+                    <article class="kpi">
+                        <div class="value">Real-Time</div>
+                        <div class="label">Spending Insights</div>
+                    </article>
+                    <article class="kpi">
+                        <div class="value">Goal-First</div>
+                        <div class="label">Planning</div>
+                    </article>
+                </div>
             </div>
-            
-            <div class="stat-item">
-                <div class="stat-number" id="transactions-count">0</div>
-                <div class="stat-label">Transactions Tracked</div>
-            </div>
-            
-            <div class="stat-item">
-                <div class="stat-number" id="savings-count">0</div>
-                <div class="stat-label">KES Saved</div>
-            </div>
-            
-            <div class="stat-item">
-                <div class="stat-number" id="rating-count">0</div>
-                <div class="stat-label">Average Rating</div>
-            </div>
-        </div>
-    </section>
 
-    <!-- Testimonials Section -->
-    <section class="section" id="testimonials">
-        <div class="section-title">
-            <h2>What Our Users Say</h2>
-            <p>Real stories from our community</p>
-        </div>
-        
-        <div class="testimonials-grid">
-            <div class="testimonial-card">
-                <div class="testimonial-content">
-                    "Mo-Wallet helped me save 30% more by visualizing my spending habits. The budget alerts are a game-changer!"
-                </div>
-                <div class="testimonial-author">
-                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah K." class="author-avatar">
-                    <div class="author-info">
-                        <h4>Sarah K.</h4>
-                        <p>Freelance Designer</p>
-                    </div>
+            <div class="hero-visual">
+                <img src="{% static 'images/mo-wallet.jpg' %}" alt="Mo-Wallet dashboard preview">
+                <div class="float-card">
+                    <h3>Dashboard in one glance</h3>
+                    <p>See transactions, budgets, goals, and wallet balances together in the same strategic view.</p>
                 </div>
             </div>
-            
-            <div class="testimonial-card">
-                <div class="testimonial-content">
-                    "Tracking multiple business accounts became so easy with Mo-Wallet. The reports save me hours every month."
-                </div>
-                <div class="testimonial-author">
-                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="James M." class="author-avatar">
-                    <div class="author-info">
-                        <h4>James M.</h4>
-                        <p>Small Business Owner</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="testimonial-card">
-                <div class="testimonial-content">
-                    "As a student, every shilling counts. Mo-Wallet's goal tracking helped me save for my laptop in just 4 months!"
-                </div>
-                <div class="testimonial-author">
-                    <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Amina W." class="author-avatar">
-                    <div class="author-info">
-                        <h4>Amina W.</h4>
-                        <p>University Student</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- CTA Section -->
-    <section class="cta">
-        <div class="cta-content">
-            <h2>Ready to Transform Your Finances?</h2>
-            <p>Join thousands of Kenyans taking control of their money today. Sign up now and get your first month free.</p>
-            <button class="btn btn-primary">Get Started Free</button>
-        </div>
-    </section>
-    <!-- Signup Overlay -->
-<div id="signupOverlay" class="overlay">
-    <div class="modal">
-      <form id="signupForm">
-        <h2>Sign Up</h2>
-        <div class="input-group">
-          <label>Username</label>
-          <input type="text" id="username" required />
-        </div>
-        <div class="input-group">
-          <label>Email</label>
-          <input type="email" id="email" required />
-        </div>
-        <div class="input-group">
-          <label>Password</label>
-          <input type="password" id="password" required />
-        </div>
-        <div class="input-group">
-          <label>Confirm Password</label>
-          <input type="password" id="confirmPassword" required />
-        </div>
-        <button type="submit">Register</button>
-        <p id="message"></p>
-      </form>
-      <span id="closeModal" class="close-btn">&times;</span>
-    </div>
-  </div>
-  
-  <script src="{% static 'js/signup.js' %}"></script>
-  
+        <section class="features" id="features">
+            <article class="feature">
+                <i class="fas fa-wallet"></i>
+                <h3>Wallet Overview</h3>
+                <p>Track available balances and cash movement across your personal finances.</p>
+            </article>
+            <article class="feature">
+                <i class="fas fa-chart-pie"></i>
+                <h3>Analytics</h3>
+                <p>Understand where your money goes with visual insights and monthly trend analysis.</p>
+            </article>
+            <article class="feature">
+                <i class="fas fa-bullseye"></i>
+                <h3>Goals</h3>
+                <p>Set measurable savings targets and watch progress update as you contribute.</p>
+            </article>
+            <article class="feature">
+                <i class="fas fa-scale-balanced"></i>
+                <h3>Budget Guardrails</h3>
+                <p>Stay ahead with category-level budget awareness before overspending happens.</p>
+            </article>
+            <article class="feature">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <h3>Bills & Payments</h3>
+                <p>Handle recurring expenses with clear due-date visibility and payment organization.</p>
+            </article>
+            <article class="feature">
+                <i class="fas fa-mobile-screen-button"></i>
+                <h3>Responsive Experience</h3>
+                <p>Everything stays usable and polished on desktop, tablet, and mobile screens.</p>
+            </article>
+        </section>
+    </main>
 
-    
-
-    <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            try {
-                const response = await fetch('/api/home-data/');
-                const data = await response.json();
-
-                // Example: Update stats dynamically
-                document.getElementById('users-count').textContent = data.active_users;
-                document.getElementById('transactions-count').textContent = data.transactions_tracked;
-                document.getElementById('savings-count').textContent = data.kes_saved;
-                document.getElementById('rating-count').textContent = data.average_rating;
-            } catch (error) {
-                console.error('Error fetching home data:', error);
-            }
-        });
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Mo Wallet",
+        "description": "Mo Wallet is a smart money companion for budgeting, tracking spending, managing goals, and organizing payments.",
+        "applicationCategory": "FinanceApplication",
+        "operatingSystem": "Web",
+        "url": "{{ request.build_absolute_uri }}"
+    }
     </script>
 </body>
-{% endblock %}
 </html>

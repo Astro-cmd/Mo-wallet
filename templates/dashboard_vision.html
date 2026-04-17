@@ -163,13 +163,13 @@
                                 KES {{ budget.amount_spent|floatformat:0|intcomma }} / {{ budget.limit|floatformat:0|intcomma }}
                             </div>
                         </div>
-                        <span class="badge {% if budget.percentage_used >= 90 %}badge-danger{% elif budget.percentage_used >= 75 %}badge-warning{% else %}badge-success{% endif %}">
-                            {{ budget.percentage_used|floatformat:0 }}%
+                        <span class="badge {% if budget.percentage_used_display >= 90 %}badge-danger{% elif budget.percentage_used_display >= 75 %}badge-warning{% else %}badge-success{% endif %}">
+                            {{ budget.percentage_used_display|floatformat:0 }}%
                         </span>
                     </div>
                     <div class="progress-bar">
-                        <div class="progress-fill {% if budget.percentage_used >= 90 %}danger{% elif budget.percentage_used >= 75 %}warning{% else %}success{% endif %}" 
-                             style="width: {{ budget.percentage_used }}%;"></div>
+                        <div class="progress-fill {% if budget.percentage_used_display >= 90 %}danger{% elif budget.percentage_used_display >= 75 %}warning{% else %}success{% endif %}" 
+                             style="width: {{ budget.percentage_used_display }}%;"></div>
                     </div>
                 </div>
                 {% endfor %}
@@ -185,7 +185,7 @@
                         <h3>Savings Goals</h3>
                         <p class="text-small">Track your progress</p>
                     </div>
-                    <a href="{% url 'goals:goals' %}" class="btn btn-ghost btn-sm">
+                    <a href="{% url 'goals:list' %}" class="btn btn-ghost btn-sm">
                         Add <i class="fas fa-plus"></i>
                     </a>
                 </div>
@@ -215,7 +215,7 @@
                 <div style="text-align: center; padding: var(--space-xl) 0;">
                     <i class="fas fa-rocket" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: var(--space-md);"></i>
                     <p class="text-small">No active goals yet</p>
-                    <a href="{% url 'goals:goals' %}" class="btn btn-primary btn-sm mt-md">
+                    <a href="{% url 'goals:list' %}" class="btn btn-primary btn-sm mt-md">
                         Create Your First Goal
                     </a>
                 </div>
@@ -266,16 +266,20 @@
         <div class="card animate-fade-in" style="animation-delay: 200ms;">
             <h3>Expense Breakdown</h3>
             <p class="text-small mb-lg">By category this month</p>
-            
-            <canvas id="expenseChart" style="height: 300px;"></canvas>
+
+            <div class="chart-panel">
+                <canvas id="expenseChart"></canvas>
+            </div>
         </div>
 
         <!-- Spending Trends -->
         <div class="card animate-fade-in" style="animation-delay: 250ms;">
             <h3>Spending Trends</h3>
             <p class="text-small mb-lg">Last 6 months overview</p>
-            
-            <canvas id="trendChart" style="height: 300px;"></canvas>
+
+            <div class="chart-panel">
+                <canvas id="trendChart"></canvas>
+            </div>
         </div>
     </div>
 </div>
@@ -304,99 +308,195 @@
 .badge {
   display: inline-flex;
 }
+
+.chart-panel {
+    position: relative;
+    height: 320px;
+    min-height: 320px;
+    max-height: 320px;
+    width: 100%;
+}
+
+.chart-panel canvas {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .chart-panel {
+        height: 280px;
+        min-height: 280px;
+        max-height: 280px;
+    }
+}
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Expense Chart
+    const rootStyles = getComputedStyle(document.documentElement);
+    const textColor = rootStyles.getPropertyValue('--text-color').trim() || '#E2E8F0';
+    const textSecondary = rootStyles.getPropertyValue('--text-secondary-color').trim() || '#94A3B8';
+    const gridColor = rootStyles.getPropertyValue('--border').trim() || 'rgba(148, 163, 184, 0.2)';
+
+    const expenseLabels = {{ expense_labels|safe }};
+    const expenseData = {{ expense_data|safe }};
+    const trendLabels = {{ trend_labels|safe }};
+    const trendIncome = {{ trend_income|safe }};
+    const trendExpenses = {{ trend_expenses|safe }};
+
+    // Expense Breakdown: Doughnut is best for part-to-whole composition by category.
     const expenseCtx = document.getElementById('expenseChart');
     if (expenseCtx) {
+        const existingExpenseChart = Chart.getChart(expenseCtx);
+        if (existingExpenseChart) {
+            existingExpenseChart.destroy();
+        }
+
+        const hasExpenseData = Array.isArray(expenseData) && expenseData.some(value => Number(value) > 0);
+
         new Chart(expenseCtx, {
             type: 'doughnut',
-            data: {
-                labels: {{ expense_labels|safe }},
+            data: hasExpenseData ? {
+                labels: expenseLabels,
                 datasets: [{
-                    data: {{ expense_data|safe }},
+                    data: expenseData,
                     backgroundColor: [
-                        'rgba(91, 33, 182, 0.9)',
-                        'rgba(139, 92, 246, 0.7)',
+                        'rgba(91, 33, 182, 0.95)',
+                        'rgba(139, 92, 246, 0.9)',
+                        'rgba(56, 189, 248, 0.9)',
                         'rgba(16, 185, 129, 0.9)',
                         'rgba(245, 158, 11, 0.9)',
                         'rgba(239, 68, 68, 0.9)',
                     ],
-                    borderColor: 'var(--card-bg-color)',
-                    borderWidth: 3,
-                }]
+                    borderColor: 'rgba(15, 23, 42, 0.9)',
+                    borderWidth: 2,
+                    hoverOffset: 8,
+                }],
+            } : {
+                labels: ['No expense data'],
+                datasets: [{
+                    data: [1],
+                    backgroundColor: ['rgba(148, 163, 184, 0.35)'],
+                    borderColor: ['rgba(15, 23, 42, 0.9)'],
+                    borderWidth: 2,
+                }],
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                resizeDelay: 120,
+                cutout: '68%',
                 plugins: {
                     legend: {
+                        display: hasExpenseData,
                         position: 'bottom',
                         labels: {
-                            color: 'var(--text-color)',
-                            font: { size: 12, weight: '500' },
-                            padding: 15,
+                            color: textColor,
+                            font: { size: 12, weight: '600' },
+                            padding: 14,
                             usePointStyle: true,
+                        },
+                    },
+                    tooltip: {
+                        enabled: hasExpenseData,
+                        callbacks: {
+                            label: function(context) {
+                                const value = Number(context.raw || 0);
+                                return `${context.label}: KES ${value.toLocaleString()}`;
+                            }
                         }
-                    }
-                }
-            }
+                    },
+                },
+            },
         });
     }
 
-    // Trend Chart
+    // Spending Trends: Line chart is best for time-series month-over-month comparison.
     const trendCtx = document.getElementById('trendChart');
     if (trendCtx) {
+        const existingTrendChart = Chart.getChart(trendCtx);
+        if (existingTrendChart) {
+            existingTrendChart.destroy();
+        }
+
         new Chart(trendCtx, {
             type: 'line',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                labels: trendLabels,
                 datasets: [
                     {
                         label: 'Income',
-                        data: [65000, 68000, 72000, 71000, 75000, 78000],
+                        data: trendIncome,
                         borderColor: 'rgba(16, 185, 129, 1)',
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                        tension: 0.4,
+                        backgroundColor: 'rgba(16, 185, 129, 0.12)',
+                        pointBackgroundColor: 'rgba(16, 185, 129, 1)',
+                        pointBorderColor: '#0F172A',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 5,
+                        tension: 0.35,
                         fill: true,
-                        borderWidth: 2,
+                        borderWidth: 3,
                     },
                     {
                         label: 'Expenses',
-                        data: [35000, 38000, 32000, 40000, 39000, 37000],
+                        data: trendExpenses,
                         borderColor: 'rgba(239, 68, 68, 1)',
-                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                        tension: 0.4,
+                        backgroundColor: 'rgba(239, 68, 68, 0.10)',
+                        pointBackgroundColor: 'rgba(239, 68, 68, 1)',
+                        pointBorderColor: '#0F172A',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 5,
+                        tension: 0.35,
                         fill: true,
-                        borderWidth: 2,
-                    }
-                ]
+                        borderWidth: 3,
+                    },
+                ],
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                resizeDelay: 120,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
                 plugins: {
                     legend: {
                         labels: {
-                            color: 'var(--text-color)',
-                            font: { size: 12, weight: '500' },
+                            color: textColor,
+                            font: { size: 12, weight: '600' },
                             usePointStyle: true,
+                        },
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const value = Number(context.raw || 0);
+                                return `${context.dataset.label}: KES ${value.toLocaleString()}`;
+                            }
                         }
-                    }
+                    },
                 },
                 scales: {
                     y: {
-                        grid: { color: 'var(--border)' },
-                        ticks: { color: 'var(--text-secondary-color)' },
+                        beginAtZero: true,
+                        grid: { color: gridColor },
+                        ticks: {
+                            color: textSecondary,
+                            callback: function(value) {
+                                return Number(value).toLocaleString();
+                            }
+                        },
                     },
                     x: {
                         grid: { display: false },
-                        ticks: { color: 'var(--text-secondary-color)' },
-                    }
-                }
-            }
+                        ticks: { color: textSecondary },
+                    },
+                },
+            },
         });
     }
 </script>

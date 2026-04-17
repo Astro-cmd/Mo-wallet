@@ -1,0 +1,298 @@
+{% extends 'base_vision.html' %}
+{% load humanize %}
+
+{% block title %}Profile - Mo Wallet{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-page {
+        padding: var(--space-2xl) 0;
+    }
+
+    .profile-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: var(--space-lg);
+        margin-bottom: var(--space-2xl);
+        padding-bottom: var(--space-xl);
+        border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+    }
+
+    .profile-header h1 {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        color: var(--text-color);
+        font-size: 2.1rem;
+        font-weight: 800;
+    }
+
+    .profile-header p {
+        margin: var(--space-sm) 0 0 0;
+        color: var(--text-secondary-color);
+    }
+
+    .profile-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 2fr;
+        gap: var(--space-xl);
+        margin-bottom: var(--space-xl);
+    }
+
+    .vision-card {
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.92) 0%, rgba(15, 21, 53, 0.74) 100%);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-radius: var(--radius-lg);
+        box-shadow: 0 10px 36px rgba(0, 0, 0, 0.3);
+        padding: var(--space-xl);
+    }
+
+    .user-card {
+        text-align: center;
+    }
+
+    .avatar {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        margin: 0 auto var(--space-md) auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        box-shadow: 0 8px 24px rgba(67, 24, 255, 0.35);
+    }
+
+    .user-name {
+        margin: 0;
+        color: var(--text-color);
+        font-size: 1.4rem;
+        font-weight: 800;
+    }
+
+    .user-email {
+        margin-top: var(--space-xs);
+        color: var(--text-secondary-color);
+        font-size: 0.9rem;
+    }
+
+    .user-meta {
+        margin-top: var(--space-lg);
+        display: grid;
+        gap: var(--space-sm);
+        text-align: left;
+    }
+
+    .meta-row {
+        display: flex;
+        justify-content: space-between;
+        gap: var(--space-md);
+        padding: var(--space-sm) 0;
+        border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+        color: var(--text-secondary-color);
+        font-size: 0.86rem;
+    }
+
+    .meta-row:last-child {
+        border-bottom: 0;
+    }
+
+    .meta-row strong {
+        color: var(--text-color);
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-md);
+    }
+
+    .stat-card {
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-radius: var(--radius-md);
+        background: rgba(139, 92, 246, 0.07);
+        padding: var(--space-md);
+    }
+
+    .stat-label {
+        display: block;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-secondary-color);
+        font-weight: 700;
+    }
+
+    .stat-value {
+        display: block;
+        margin-top: var(--space-xs);
+        color: var(--text-color);
+        font-size: 1.15rem;
+        font-weight: 800;
+    }
+
+    .recent-section {
+        margin-top: var(--space-xl);
+    }
+
+    .recent-title {
+        margin: 0 0 var(--space-md) 0;
+        color: var(--text-color);
+        font-size: 1.05rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+    }
+
+    .recent-list {
+        display: grid;
+        gap: var(--space-sm);
+    }
+
+    .recent-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--space-md);
+        border: 1px solid rgba(139, 92, 246, 0.16);
+        border-radius: var(--radius-md);
+        background: rgba(139, 92, 246, 0.06);
+        padding: var(--space-sm) var(--space-md);
+    }
+
+    .recent-item .desc {
+        color: var(--text-color);
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .recent-item .meta {
+        color: var(--text-secondary-color);
+        font-size: 0.78rem;
+        margin-top: 2px;
+    }
+
+    .recent-item .amount {
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .recent-item .amount.income {
+        color: var(--success);
+    }
+
+    .recent-item .amount.expense {
+        color: var(--danger);
+    }
+
+    @media (max-width: 992px) {
+        .profile-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .profile-header h1 {
+            font-size: 1.6rem;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .recent-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <div class="profile-page">
+        <div class="profile-header">
+            <div>
+                <h1><i class="fas fa-user-circle"></i> Profile</h1>
+                <p>Your account details and financial snapshot</p>
+            </div>
+        </div>
+
+        <div class="profile-grid">
+            <section class="vision-card user-card">
+                <div class="avatar">
+                    {% if profile_user.first_name %}
+                        {{ profile_user.first_name|first|upper }}
+                    {% else %}
+                        {{ profile_user.username|first|upper }}
+                    {% endif %}
+                </div>
+                <h2 class="user-name">{{ profile_user.first_name|default:profile_user.username }} {{ profile_user.last_name }}</h2>
+                <p class="user-email">{{ profile_user.email|default:"No email set" }}</p>
+
+                <div class="user-meta">
+                    <div class="meta-row"><span>Username</span><strong>{{ profile_user.username }}</strong></div>
+                    <div class="meta-row"><span>Phone</span><strong>{{ profile_user.phone_number|default:"Not set" }}</strong></div>
+                    <div class="meta-row"><span>Country</span><strong>{{ profile_user.country|default:"Not set" }}</strong></div>
+                    <div class="meta-row"><span>Member Since</span><strong>{{ profile_user.date_joined|date:"M d, Y" }}</strong></div>
+                </div>
+            </section>
+
+            <section class="vision-card">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-label">Wallet Balance</span>
+                        <span class="stat-value">KES {{ wallet_balance|floatformat:2|intcomma }}</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Total Income</span>
+                        <span class="stat-value">KES {{ monthly_income|floatformat:2|intcomma }}</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Total Expenses</span>
+                        <span class="stat-value">KES {{ monthly_expenses|floatformat:2|intcomma }}</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Active Goals</span>
+                        <span class="stat-value">{{ active_goals }}</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Budgets</span>
+                        <span class="stat-value">{{ budgets_count }}</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Net Position</span>
+                        <span class="stat-value">KES {{ net_position|floatformat:2|intcomma }}</span>
+                    </div>
+                </div>
+
+                <div class="recent-section">
+                    <h3 class="recent-title"><i class="fas fa-clock"></i> Recent Activity</h3>
+                    {% if recent_transactions %}
+                    <div class="recent-list">
+                        {% for tx in recent_transactions %}
+                        <div class="recent-item">
+                            <div>
+                                <div class="desc">{{ tx.description|truncatewords:5 }}</div>
+                                <div class="meta">{{ tx.get_category_display }} • {{ tx.transaction_date|date:"M d, Y" }}</div>
+                            </div>
+                            <div class="amount {% if tx.transaction_type == 'income' %}income{% else %}expense{% endif %}">
+                                {% if tx.transaction_type == 'income' %}+{% else %}-{% endif %}KES {{ tx.amount|floatformat:2|intcomma }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p style="color: var(--text-secondary-color); margin: 0;">No recent transactions found.</p>
+                    {% endif %}
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}
