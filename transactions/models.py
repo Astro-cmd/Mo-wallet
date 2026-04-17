@@ -24,9 +24,9 @@ class Transaction(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='transactions')
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     category = models.CharField(max_length=50)
-    description = models.CharField(max_length=200)
-    date = models.DateTimeField(auto_now_add=True)  # Keep this for record creation time
-    transaction_date = models.DateTimeField(auto_now_add=True)  # Changed to auto_now_add
+    description = models.CharField(max_length=200, default='')
+    date = models.DateTimeField(auto_now_add=True, null=True, blank=True)  # Keep this for record creation time
+    transaction_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)  # Changed to auto_now_add
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS)
     transaction_type = models.CharField(max_length=20, choices=TRANSACTION_TYPES)
 
