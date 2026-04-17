@@ -52,6 +52,7 @@ def budgets_view(request):
     total_budget = budgets.aggregate(total=Sum('limit'))['total'] or 0
     total_spent = budgets.aggregate(total=Sum('amount_spent'))['total'] or 0
     total_remaining = total_budget - total_spent
+    total_percentage_used = (total_spent / total_budget * 100) if total_budget > 0 else 0
 
     # Setup pagination
     page = request.GET.get('page', 1)
@@ -69,6 +70,7 @@ def budgets_view(request):
         'total_budget': total_budget,
         'total_spent': total_spent,
         'total_remaining': total_remaining,
+        'total_percentage_used': total_percentage_used,
         'search_query': search_query,
         'category_filter': category_filter,
         'start_date': start_date,

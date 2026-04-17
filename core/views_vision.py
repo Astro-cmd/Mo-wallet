@@ -12,6 +12,7 @@ from django.http import JsonResponse
 from transactions.models import Transaction
 from goals.models import SavingsGoal
 from budget.models import Budget
+from notifications.models import Notification
 from core.categories import TRANSACTION_CATEGORIES
 from datetime import timedelta, datetime
 from decimal import Decimal
@@ -88,12 +89,10 @@ def dashboard_vision(request):
     # ===== BUDGETS =====
     budgets = Budget.objects.filter(user=user)
     for budget in budgets:
-        spent = month_transactions.filter(
-            category=budget.category,
-            transaction_type='expense'
-        ).aggregate(Sum('amount'))['amount__sum'] or Decimal('0')
-        budget.amount_spent = spent
-        budget.percentage_used = min(100, (spent / budget.limit * 100) if budget.limit > 0 else 0)
+        # Keep dashboard budget values consistent with the budgets page,
+        # which reads from persisted Budget fields.
+        percentage_used = float(budget.percentage_used or 0)
+        budget.percentage_used_display = min(100.0, max(0.0, percentage_used))
     
     # ===== GOALS =====
     active_goals = SavingsGoal.objects.filter(user=user, completed=False).order_by('-created_at')[:3]
@@ -113,28 +112,49 @@ def dashboard_vision(request):
     ]
     expense_data = [float(item['total']) for item in expense_breakdown]
     
-    # ===== SPENDING DATA =====
-    last_6_months_income = []
-    last_6_months_expenses = []
-    
-    for i in range(6, 0, -1):
-        month_start = (now - timedelta(days=30*i)).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-        month_end = (month_start + timedelta(days=32)).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-        
+    # ===== SPENDING DATA (LAST 6 MONTHS) =====
+    trend_labels = []
+    trend_income = []
+    trend_expenses = []
+
+    for offset in range(5, -1, -1):
+        month = now.month - offset
+        year = now.year
+
+        while month <= 0:
+            month += 12
+            year -= 1
+
+        month_start = now.replace(
+            year=year,
+            month=month,
+            day=1,
+            hour=0,
+            minute=0,
+            second=0,
+            microsecond=0,
+        )
+
+        if month == 12:
+            next_month_start = month_start.replace(year=year + 1, month=1, day=1)
+        else:
+            next_month_start = month_start.replace(month=month + 1, day=1)
+
         month_data = Transaction.objects.filter(
             user=user,
             transaction_date__gte=month_start,
-            transaction_date__lt=month_end
+            transaction_date__lt=next_month_start,
         )
-        
-        month_inc = month_data.filter(transaction_type='income').aggregate(Sum('amount'))['amount__sum'] or 0
-        month_exp = month_data.filter(transaction_type='expense').aggregate(Sum('amount'))['amount__sum'] or 0
-        
-        last_6_months_income.append(float(month_inc))
-        last_6_months_expenses.append(float(month_exp))
+
+        month_inc = month_data.filter(transaction_type='income').aggregate(Sum('amount'))['amount__sum'] or Decimal('0')
+        month_exp = month_data.filter(transaction_type='expense').aggregate(Sum('amount'))['amount__sum'] or Decimal('0')
+
+        trend_labels.append(month_start.strftime('%b'))
+        trend_income.append(float(month_inc))
+        trend_expenses.append(float(month_exp))
     
     # ===== UNREAD NOTIFICATIONS =====
-    unread_notifications = 0  # Implement based on your notifications model
+    unread_notifications = Notification.objects.filter(user=user, is_read=False).count()
     
     context = {
         'user': user,
@@ -154,6 +174,9 @@ def dashboard_vision(request):
         'recent_transactions': recent_transactions,
         'expense_labels': json.dumps(expense_labels),
         'expense_data': json.dumps(expense_data),
+        'trend_labels': json.dumps(trend_labels),
+        'trend_income': json.dumps(trend_income),
+        'trend_expenses': json.dumps(trend_expenses),
         'unread_notifications': unread_notifications,
         'current_month_name': now.strftime('%B %Y'),
     }

@@ -3,12 +3,11 @@ from django.contrib.auth.decorators import login_required
 from transactions.models import Transaction
 from budget.models import Budget
 from goals.models import SavingsGoal
-from django.db.models import Sum, Avg, Count, F, ExpressionWrapper, DecimalField
-from django.db.models.functions import ExtractMonth, ExtractYear, TruncDate
+from django.db.models import Sum, Avg, Count
+from django.db.models.functions import TruncDate
 from django.utils import timezone
-import pandas as pd
-from datetime import datetime, timedelta
-import numpy as np
+from datetime import timedelta
+import json
 import calendar
 
 @login_required
@@ -56,7 +55,7 @@ def analytics_view(request):
     expense_change = ((current_month_expenses - last_month_expenses) / last_month_expenses * 100) if last_month_expenses > 0 else 0
 
     # Spending patterns
-    expense_categories = Transaction.objects.filter(
+    expense_categories_qs = Transaction.objects.filter(
         user=user,
         transaction_type='expense'
     ).values('category').annotate(
@@ -64,33 +63,48 @@ def analytics_view(request):
         count=Count('id'),
         avg_amount=Avg('amount')
     ).order_by('-total')
+    expense_categories = list(expense_categories_qs)
 
-    # Time series data for charts
-    last_12_months = today - timedelta(days=365)
-    monthly_data = Transaction.objects.filter(
-        user=user,
-        transaction_date__gte=last_12_months
-    ).annotate(
-        month=ExtractMonth('transaction_date'),
-        year=ExtractYear('transaction_date')
-    ).values('month', 'year', 'transaction_type').annotate(
-        total=Sum('amount')
-    ).order_by('year', 'month')
-
-    # Prepare chart data
+    # Time series data for charts (last 12 months, aligned month by month)
     months_labels = []
-    income_data = [0] * 12
-    expense_data = [0] * 12
-    
-    for data in monthly_data:
-        month_idx = data['month'] - 1
-        if data['transaction_type'] == 'income':
-            income_data[month_idx] = float(data['total'])
+    income_data = []
+    expense_data = []
+
+    for offset in range(11, -1, -1):
+        month = today.month - offset
+        year = today.year
+
+        while month <= 0:
+            month += 12
+            year -= 1
+
+        month_start = today.replace(
+            year=year,
+            month=month,
+            day=1,
+            hour=0,
+            minute=0,
+            second=0,
+            microsecond=0,
+        )
+
+        if month == 12:
+            next_month_start = month_start.replace(year=year + 1, month=1, day=1)
         else:
-            expense_data[month_idx] = float(data['total'])
-        if len(months_labels) < 12:
-            month_name = calendar.month_abbr[data['month']]
-            months_labels.append(f"{month_name} {data['year']}")
+            next_month_start = month_start.replace(month=month + 1, day=1)
+
+        month_transactions = Transaction.objects.filter(
+            user=user,
+            transaction_date__gte=month_start,
+            transaction_date__lt=next_month_start,
+        )
+
+        month_income = month_transactions.filter(transaction_type='income').aggregate(Sum('amount'))['amount__sum'] or 0
+        month_expenses = month_transactions.filter(transaction_type='expense').aggregate(Sum('amount'))['amount__sum'] or 0
+
+        months_labels.append(f"{calendar.month_abbr[month]} {year}")
+        income_data.append(float(month_income))
+        expense_data.append(float(month_expenses))
 
     # Daily spending patterns
     daily_expenses = Transaction.objects.filter(
@@ -112,8 +126,37 @@ def analytics_view(request):
     # Budget analysis
     budget_progress = Budget.objects.filter(user=user).order_by('-amount_spent')
 
+    budget_safe_count = 0
+    budget_warning_count = 0
+    budget_critical_count = 0
+
+    for budget in budget_progress:
+        pct = float(budget.percentage_used or 0)
+        budget.percentage_used_display = min(100.0, max(0.0, pct))
+        if pct > 90:
+            budget_critical_count += 1
+        elif pct > 75:
+            budget_warning_count += 1
+        else:
+            budget_safe_count += 1
+
     # Goals progress - use the existing progress property
     savings_goals = SavingsGoal.objects.filter(user=user).order_by('-current_savings')
+
+    goals_urgent_count = sum(1 for goal in savings_goals if not goal.completed and goal.days_left < 30)
+    goals_completed_count = SavingsGoal.objects.filter(user=user, completed=True).count()
+    goal_avg_progress = round(
+        sum(float(goal.progress) for goal in savings_goals) / len(savings_goals),
+        1
+    ) if savings_goals else 0
+
+    top_expense_category = expense_categories[0] if expense_categories else None
+    top_expense_category_name = top_expense_category['category'] if top_expense_category else 'No expenses yet'
+    top_expense_category_total = float(top_expense_category['total']) if top_expense_category else 0
+    avg_daily_spend = round(sum(daily_data) / len(daily_data), 2) if daily_data else 0
+
+    expense_category_labels = [item['category'] for item in expense_categories]
+    expense_category_data = [float(item['total']) for item in expense_categories]
 
     context = {
         'total_income': total_income,
@@ -130,8 +173,24 @@ def analytics_view(request):
         'expense_data': expense_data,
         'daily_labels': daily_labels,
         'daily_data': daily_data,
+        'months_labels_json': json.dumps(months_labels),
+        'income_data_json': json.dumps(income_data),
+        'expense_data_json': json.dumps(expense_data),
+        'daily_labels_json': json.dumps(daily_labels),
+        'daily_data_json': json.dumps(daily_data),
+        'expense_category_labels_json': json.dumps(expense_category_labels),
+        'expense_category_data_json': json.dumps(expense_category_data),
         'budget_progress': budget_progress,
         'savings_goals': savings_goals,
+        'budget_safe_count': budget_safe_count,
+        'budget_warning_count': budget_warning_count,
+        'budget_critical_count': budget_critical_count,
+        'goals_urgent_count': goals_urgent_count,
+        'goals_completed_count': goals_completed_count,
+        'goal_avg_progress': goal_avg_progress,
+        'top_expense_category_name': top_expense_category_name,
+        'top_expense_category_total': top_expense_category_total,
+        'avg_daily_spend': avg_daily_spend,
     }
     
     return render(request, 'analytics.html', context)

@@ -37,9 +37,14 @@ def goals_list(request):
 def add_contribution(request):
     goal_id = request.POST.get('goal_id')
     amount = request.POST.get('amount')
+    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
     
     if not goal_id or not amount:
-        return JsonResponse({'status': 'error', 'message': 'Missing required fields'})
+        message = 'Missing required fields'
+        if is_ajax:
+            return JsonResponse({'status': 'error', 'message': message})
+        messages.error(request, message)
+        return redirect('goals:list')
     
     goal = get_object_or_404(SavingsGoal, id=goal_id, user=request.user)
     
@@ -53,6 +58,9 @@ def add_contribution(request):
         # Create contribution with transaction
         contribution = goal.add_contribution(amount)
         messages.success(request, f'Successfully added contribution of KES {amount:,.2f} to {goal.goal_name}')
+        if not is_ajax:
+            return redirect('goals:list')
+
         return JsonResponse({
             'status': 'success',
             'current_savings': float(goal.current_savings),
@@ -65,7 +73,10 @@ def add_contribution(request):
             }
         })
     except (ValidationError, ValueError, TypeError) as e:
-        return JsonResponse({'status': 'error', 'message': str(e)})
+        if is_ajax:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+        messages.error(request, str(e))
+        return redirect('goals:list')
 
 @login_required
 @require_POST
@@ -106,19 +117,29 @@ def edit_goal(request, goal_id):
 @require_POST
 def delete_goal(request, goal_id):
     goal = get_object_or_404(SavingsGoal, id=goal_id, user=request.user)
+    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
     try:
         if goal.can_delete():
             goal_name = goal.goal_name
             goal.delete()
             messages.success(request, f'Goal "{goal_name}" deleted successfully!')
+            if not is_ajax:
+                return redirect('goals:list')
             return JsonResponse({'status': 'success'})
         else:
-            return JsonResponse({
+            payload = {
                 'status': 'error',
                 'message': 'Cannot delete a goal that has contributions or is completed.'
-            })
+            }
+            if is_ajax:
+                return JsonResponse(payload)
+            messages.error(request, payload['message'])
+            return redirect('goals:list')
     except Exception as e:
-        return JsonResponse({'status': 'error', 'message': str(e)})
+        if is_ajax:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+        messages.error(request, str(e))
+        return redirect('goals:list')
 
 class SavingsGoalViewSet(viewsets.ModelViewSet):
     serializer_class = SavingsGoalSerializer

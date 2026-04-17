@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 
 app_name = 'core'
@@ -11,5 +11,8 @@ urlpatterns = [
     
     path('terms/', views.terms_view, name='terms'),
     path('privacy/', views.privacy_view, name='privacy'),
+    
+    # Vision UI routes
+    path('', include('core.urls_vision')),
 ]
 
