@@ -5,6 +5,7 @@ import os
 import environ
 from dotenv import load_dotenv
 import sys
+import dj_database_url
 
 # Define BASE_DIR before using it
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -196,12 +197,23 @@ WSGI_APPLICATION = 'Mowallet.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if os.getenv('DATABASE_URL'):
+    # Production: Use PostgreSQL (Railway automatically sets DATABASE_URL)
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.getenv('DATABASE_URL'),
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
     }
-}
+else:
+    # Development: Use SQLite
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # Use SQLite for testing to avoid PostgreSQL collation issues
 if 'test' in sys.argv:
