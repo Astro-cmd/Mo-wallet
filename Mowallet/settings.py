@@ -119,50 +119,144 @@ REST_FRAMEWORK = {
     ),
 }
 
-# admin dashborad 
+# admin dashborad - Jazzmin Configuration
 JAZZMIN_SETTINGS = {
+    # Site Information
     "site_title": "Mo-Wallet Admin",
-    "site_header": "Mo-Wallet Dashboard",
+    "site_header": "Mo-Wallet Admin Dashboard",
     "site_brand": "Mo-Wallet",
-    "welcome_sign": "Welcome to Mo-Wallet Admin",
-    "copyright": "PurpleStack",
+    "site_logo": None,  # Add path to your logo image if available
+    "login_logo": None,
+    "welcome_sign": "Welcome to Mo-Wallet Admin Dashboard 🚀",
+    "copyright": "© 2024 Mo-Wallet by PurpleStack",
+    
+    # UI Configuration
     "show_sidebar": True,
     "navigation_expanded": True,
-    "hide_apps": [],
+    "hide_apps": ["rest_framework"],  # Hide DRF admin
     "hide_models": [],
-    "order_with_respect_to": ["users", "transactions", "analytics", "goals"],
+    
+    # App Ordering
+    "order_with_respect_to": [
+        "users",
+        "transactions",
+        "budget",
+        "goals",
+        "wallet",
+        "mpesa",
+        "analytics",
+        "notifications",
+        "testimonials",
+        "core",
+        "auth",
+    ],
+    
+    # App Icons - Enhanced with more comprehensive coverage
+    "app_icons": {
+        "users": "fas fa-users",
+        "transactions": "fas fa-exchange-alt",
+        "budget": "fas fa-coins",
+        "goals": "fas fa-piggy-bank",
+        "wallet": "fas fa-wallet",
+        "mpesa": "fas fa-mobile-alt",
+        "analytics": "fas fa-chart-bar",
+        "notifications": "fas fa-bell",
+        "testimonials": "fas fa-comment-dots",
+        "core": "fas fa-cog",
+        "auth": "fas fa-lock",
+    },
+    
+    # Model Icons - Detailed icons for each model
     "icons": {
-        "auth.User": "fas fa-user-shield",
-        "auth.Group": "fas fa-users-cog",
-        "users.Profile": "fas fa-id-badge",
-        "transactions.Transaction": "fas fa-exchange-alt",
-        "goals.SavingGoal": "fas fa-piggy-bank",
+        "auth.user": "fas fa-user-shield",
+        "auth.group": "fas fa-users-cog",
+        "auth.permission": "fas fa-lock-open",
+        "users.user": "fas fa-user-shield",
+        "users.profile": "fas fa-id-badge",
+        "transactions.transaction": "fas fa-exchange-alt",
+        "budget.budget": "fas fa-coins",
+        "goals.savingsgoal": "fas fa-piggy-bank",
+        "goals.goalcontribution": "fas fa-hand-holding-usd",
+        "wallet.wallet": "fas fa-wallet",
+        "wallet.paymentmethod": "fas fa-credit-card",
+        "wallet.prediction": "fas fa-crystal-ball",
+        "wallet.invoice": "fas fa-file-invoice",
+        "wallet.bill": "fas fa-receipt",
+        "mpesa.mpesatransaction": "fas fa-mobile-alt",
+        "analytics.analytics": "fas fa-chart-bar",
+        "notifications.notification": "fas fa-bell",
+        "testimonials.testimonial": "fas fa-comment-dots",
     },
+    
+    # Custom Links
     "custom_links": {
-        "users": [{
-            "name": "Send Notifications",
-            "url": "https://your-link.com",
-            "icon": "fas fa-bell",
-            "permissions": ["auth.view_user"]
-        }]
+        "users": [
+            {
+                "name": "User Reports",
+                "url": "/admin/",
+                "icon": "fas fa-file-pdf",
+                "permissions": ["auth.view_user"],
+            }
+        ],
+        "transactions": [
+            {
+                "name": "Transaction Reports",
+                "url": "/admin/",
+                "icon": "fas fa-file-export",
+                "permissions": ["transactions.view_transaction"],
+            }
+        ],
     },
-    "show_ui_builder": True,
+    
+    # Search Bar Configuration
+    "search_model": ["users.User", "transactions.Transaction"],
+    
+    # Related Model Configuration
+    "related_modal_active": True,
+    "show_ui_builder": DEBUG,  # Only show UI builder in development
+    
+    # Default Icon Pack - Font Awesome 6
+    "default_icon_parents": "fas fa-chevron-right",
+    "default_icon_children": "fas fa-arrow-right",
+    
+    # Collapse on Modal Toggle
+    "collapse_on_modal_toggle": True,
+    
+    # Show Admin Object Permissions
+    "show_model_permissions": True,
 }
 
 JAZZMIN_UI_TWEAKS = {
-    "theme": "darkly",  # Or "flatly", "cosmo", "solar", "superhero"
+    # Theme selection - "default", "flatly", "cosmo", "cyborg", "darkly", "journal", 
+    # "litera", "lumen", "lux", "materia", "minty", "pulse", "sandstone", "simplex", 
+    # "slate", "solar", "spacelab", "superhero", "united", "yeti"
+    "theme": "darkly",
     "dark_mode_theme": "slate",
-    "navbar": "navbar-purple navbar-dark",
+    
+    # Navbar styling
+    "navbar": "navbar-dark navbar-expand-md",
+    "navbar_fixed": False,
+    "sidebar": "sidebar-dark-purple",
+    "sidebar_fixed": False,
+    "sidebar_nav_compact_style": True,
+    "sidebar_nav_child_indent": True,
+    "sidebar_nav_granular_toggle": True,
+    "sidebar_disable_expand": False,
+    
+    # Accent color
     "accent": "accent-purple",
     "brand_colour": "navbar-purple",
+    
+    # Text sizing
     "body_small_text": False,
+    "body_medium_text": False,
     "footer_small_text": False,
     "navbar_small_text": False,
     "sidebar_small_text": True,
     "sidebar_nav_small_text": True,
-    "sidebar_disable_expand": False,
-    "sidebar_nav_child_indent": True,
-    "sidebar_nav_compact_style": True,
+    
+    # Horizontal layout
+    "layout_boxed": False,
 }
 
 
