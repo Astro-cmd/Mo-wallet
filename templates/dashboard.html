@@ -255,7 +255,7 @@
                                     <td>{{ transaction.transaction_date|date:"M d, Y" }}</td>
                                     <td>{{ transaction.description }}</td>
                                     <td>
-                                        <span class="badge rounded-pill bg-info">{{ transaction.category }}</span>
+                                        <span class="badge rounded-pill bg-info">{{ transaction.get_category_display }}</span>
                                     </td>
                                     <td>
                                         <span class="badge rounded-pill {% if transaction.transaction_type == 'income' %}bg-success{% else %}bg-danger{% endif %}">

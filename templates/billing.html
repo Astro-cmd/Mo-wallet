@@ -721,7 +721,7 @@
                             <i class="fas fa-{% if transaction.transaction_type == 'income' %}arrow-down{% else %}arrow-up{% endif %}"></i>
                         </div>
                         <div class="transaction-details">
-                            <h4>{{ transaction.category|title }}</h4>
+                            <h4>{{ transaction.get_category_display }}</h4>
                             <p>{{ transaction.transaction_date|date:"M d, Y \a\t H:i" }}</p>
                         </div>
                     </div>

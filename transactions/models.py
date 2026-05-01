@@ -45,6 +45,11 @@ class Transaction(models.Model):
         self.clean()
         super().save(*args, **kwargs)
 
+    def get_category_display(self):
+        """Get the display name for the category."""
+        category_dict = dict(self.TRANSACTION_CATEGORIES)
+        return category_dict.get(self.category, self.category.capitalize())
+    
     def __str__(self):
         return f"{self.transaction_type.capitalize()} - {self.amount} - {self.category}"
 

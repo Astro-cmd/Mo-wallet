@@ -122,6 +122,13 @@
         white-space: nowrap;
     }
 
+    .category-badge {
+        background: rgba(99, 102, 241, 0.15);
+        border-color: rgba(99, 102, 241, 0.3);
+        color: rgb(99, 102, 241);
+        font-weight: 600;
+    }
+
     .amount {
         font-weight: 800;
         text-align: right;
@@ -314,10 +321,10 @@
                         <tr>
                             <td>{{ transaction.transaction_date|date:"M d, Y" }}</td>
                             <td>
-                                <div class="desc-main">{{ transaction.description }}</div>
+                                <div class="desc-main">{{ transaction.description|default:"Transaction" }}</div>
                                 <div class="desc-sub">{{ transaction.get_transaction_type_display }}</div>
                             </td>
-                            <td><span class="badge-soft">{{ transaction.get_category_display }}</span></td>
+                            <td><span class="badge-soft category-badge">{{ transaction.get_category_display }}</span></td>
                             <td><span class="badge-soft">{{ transaction.get_payment_method_display }}</span></td>
                             <td class="amount {% if transaction.transaction_type == 'income' %}income{% else %}expense{% endif %}">
                                 {% if transaction.transaction_type == 'income' %}+{% else %}-{% endif %}KES {{ transaction.amount|floatformat:2|intcomma }}
